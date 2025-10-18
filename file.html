@@ -1,0 +1,1726 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lighthouse CFC</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Swiper.js for the image slider -->
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Favicon -->
+        <link rel="icon" href="https://i0.wp.com/lighthousecfcwarwick.com/wp-content/uploads/2020/06/cropped-The-Lighthouse-Circle-Badge-Logo-Image-Only-1-1.png?fit=192%2C192&ssl=1" sizes="200x200">
+
+    <style>
+        /* --- Base & Dark Mode Styles --- */
+        :root {
+            --bg-color: #1e293b; /* Neutral dark gray */
+            --text-color: #f9fafb;
+            --glass-bg: rgba(255, 255, 255, 0.15); /* Made brighter */
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --glass-shadow-1: rgba(79, 70, 229, 0.1);
+            --glass-shadow-2: rgba(59, 130, 246, 0.1);
+            --glass-inset-shadow: rgba(255, 255, 255, 0.3);
+            --glass-hover-bg: rgba(255, 255, 255, 0.2); /* Made brighter */
+        }
+
+        /* --- Light Mode Styles --- */
+        html.light {
+            --bg-color: #f8fafc; /* Neutral light gray */
+            --text-color: #1f2937;
+            --glass-bg: rgba(255, 255, 255, 0.8); /* Made brighter */
+            --glass-border: rgba(0, 0, 0, 0.1);
+            --glass-shadow-1: rgba(99, 102, 241, 0.08);
+            --glass-shadow-2: rgba(31, 38, 135, 0.08);
+            --glass-inset-shadow: rgba(255, 255, 255, 0.9);
+            --glass-hover-bg: rgba(255, 255, 255, 0.9); /* Made brighter */
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            overflow-x: hidden;
+            transition: background-color 300ms ease-in-out, color 300ms ease-in-out;
+        }
+        
+        /* Core Liquid Glass Style using CSS Variables */
+        .liquid-glass {
+            padding: 1rem;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px; /* Increased from 16px */
+            box-shadow: 0 0 12px var(--glass-shadow-1), 0 4px 16px var(--glass-shadow-2), inset 0 1px 0 var(--glass-inset-shadow);
+            background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.1), transparent 50%);
+            transition: all 150ms cubic-bezier(0.4, 0.0, 0.2, 1);
+            color: var(--text-color); /* Apply theme text color */
+        }
+
+        .liquid-glass-button { cursor: pointer; }
+        
+        .liquid-glass-button:hover {
+            transform: translateY(-2px);
+        }
+
+        /* --- Click Animation --- */
+        @keyframes click-effect {
+            80% {
+                transform: scale(0.95);
+                opacity: 0.7;
+            }
+        }
+        .clicked-animation {
+            animation: click-effect 900ms ease-in-out;
+        }
+
+        /* --- Navigation Hover Pill --- */
+        #nav-hover-pill {
+            position: absolute;
+            z-index: -1;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            pointer-events: none; /* Ignore mouse events */
+            transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1), 
+                        width 300ms cubic-bezier(0.4, 0, 0.2, 1),
+                        opacity 300ms ease;
+            will-change: transform, width;
+            border-radius: 99px; /* Increased from 12px */
+        }
+
+
+        /* --- THEME-AWARE STYLES --- */
+        .nav-link, .dropdown-toggle { 
+            color: var(--text-color) !important; 
+            transition: transform 600ms ease;
+            position: relative; /* Needed for z-index to work */
+            z-index: 1;
+        }
+        .nav-link:hover, .dropdown-toggle:hover {
+            transform: translateY(-2px);
+        }
+        
+        html.light .dropdown-content a:hover { background-color: rgba(0, 0, 0, 0.05); opacity: 1; }
+        html.dark .dropdown-content a:hover { background-color: rgba(255, 255, 255, 0.1); opacity: 1;}
+
+        .dropdown-content {
+            visibility: hidden;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 250ms cubic-bezier(0.4, 0.0, 0.2, 1);
+            position: absolute;
+            top: 100%;
+            left: 0;
+            margin-top: 10px;
+            min-width: 200px;
+            z-index: 50;
+        }
+
+        .dropdown-content.is-open {
+            visibility: visible;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .dropdown-content a {
+            padding: 12px 16px;
+            display: block;
+            color: var(--text-color);
+            opacity: 0.85;
+            transition: background-color 150ms ease, opacity 150ms ease;
+            border-radius: 8px;
+        }
+
+        /* --- Custom Dropdown Backgrounds --- */
+        html.light .dropdown-content.liquid-glass {
+            --glass-bg: rgba(255, 255, 255, 0.95); /* More opaque white for light mode dropdown */
+        }
+        html.dark .dropdown-content.liquid-glass {
+            --glass-bg: rgba(17, 24, 39, 0.85); /* Darker, more opaque for dark mode dropdown */
+            --glass-border: rgba(62, 47, 47, 0.088);
+        }
+
+        /* Slider Customization */
+        .swiper-pagination {
+            bottom: 16px !important;
+            transition: opacity 300ms ease-in-out;
+            opacity: 0; /* Initially hidden */
+        }
+        .swiper-pagination-bullet {
+            background-color: rgba(255, 255, 255, 0.5) !important;
+            width: 12px !important;
+            height: 12px !important;
+            opacity: 0.7 !important;
+            transition: all 200ms ease;
+        }
+        .swiper-pagination-bullet-active {
+            background-color: #ffffff !important;
+            width: 32px !important;
+            border-radius: 6px !important;
+            opacity: 1 !important;
+        }
+        
+        .swiper-button-next, .swiper-button-prev {
+            border-radius: 50%;
+            width: 48px !important;
+            height: 48px !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #374151; /* Dark mode bg */
+            color: #9ca3af; /* Dark mode icon color */
+            transition: background-color 200ms ease, transform 200ms ease, opacity 300ms ease-in-out;
+            opacity: 0; /* Initially hidden */
+        }
+        .swiper-container-hover .swiper-button-next,
+        .swiper-container-hover .swiper-button-prev,
+        .swiper-container-hover .swiper-pagination {
+            opacity: 1; /* Fade in on hover */
+        }
+        /* Also show nav buttons on modal swiper */
+        .modal-swiper .swiper-button-next,
+        .modal-swiper .swiper-button-prev,
+        .modal-swiper .swiper-pagination {
+             opacity: 1;
+        }
+
+
+        .swiper-button-next:hover, .swiper-button-prev:hover { 
+            transform: scale(1.05);
+            background-color: #4b5563; /* Dark mode bg hover */
+        }
+        /* Remove default Swiper icons */
+        .swiper-button-next::after, .swiper-button-prev::after { 
+            content: '' !important;
+        }
+        .swiper-button-next svg, .swiper-button-prev svg {
+            width: 24px;
+            height: 24px;
+        }
+        
+        html.light .swiper-pagination-bullet { background-color: rgba(0, 0, 0, 0.4) !important; }
+        html.light .swiper-pagination-bullet-active { background-color: #000 !important; }
+        html.light .swiper-button-next, html.light .swiper-button-prev { 
+            background-color: #e5e7eb; /* Light mode bg */
+            color: #6b7280; /* Light mode icon color */
+        }
+        html.light .swiper-button-next:hover, html.light .swiper-button-prev:hover { 
+            background-color: #d1d5db; /* Light mode bg hover */
+        }
+
+        /* --- Scroll Animation Styles --- */
+        .scroll-animate {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.8s cubic-bezier(0.4, 0.0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0.0, 0.2, 1);
+        }
+        .scroll-animate.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        /* Staggered delay for grid items */
+        .grid .scroll-animate:nth-child(1) { transition-delay: 100ms; }
+        .grid .scroll-animate:nth-child(2) { transition-delay: 200ms; }
+        .grid .scroll-animate:nth-child(3) { transition-delay: 300ms; }
+        .grid .scroll-animate:nth-child(4) { transition-delay: 400ms; }
+        .grid .scroll-animate:nth-child(5) { transition-delay: 100ms; }
+        .grid .scroll-animate:nth-child(6) { transition-delay: 200ms; }
+        .grid .scroll-animate:nth-child(7) { transition-delay: 300ms; }
+        .grid .scroll-animate:nth-child(8) { transition-delay: 400ms; }
+
+        /* --- Background Blur for Modals --- */
+        .content-blur {
+            filter: blur(5px);
+            pointer-events: none;
+            transition: filter 300ms ease-in-out;
+        }
+
+        /* --- Theme Toggle Button --- */
+        #theme-toggle-button {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 0 12px var(--glass-shadow-1);
+            transition: all 150ms cubic-bezier(0.4, 0.0, 0.2, 1);
+        }
+
+        #theme-toggle-button:hover {
+            transform: scale(1.05);
+            background: var(--glass-hover-bg);
+        }
+
+        /* --- Modal (Story & Page Viewer) Styles --- */
+        html.light .viewer-content.liquid-glass {
+            --glass-bg: rgba(255, 255, 255, 0.95); /* Make light mode modal more opaque white */
+        }
+        html.dark .viewer-content.liquid-glass {
+            --glass-bg: rgba(17, 24, 39, 0.9); /* Make dark mode modal more opaque */
+        }
+        .viewer-modal {
+            /* display is handled by .hidden class */
+            opacity: 0;
+            transition: opacity 300ms ease-in-out;
+        }
+        .viewer-modal.is-visible {
+            opacity: 1;
+        }
+
+        .viewer-content {
+            -ms-overflow-style: none;  /* for Internet Explorer and Edge */
+            scrollbar-width: none;  /* for Firefox */
+        }
+
+        /* --- Event List in Day Viewer --- */
+        html.light .day-event-item { background-color: #f3f4f6; /* gray-100 */ }
+        html.dark .day-event-item { background-color: #1f2937; /* gray-800 */ }
+
+
+        /* --- Table Card in Modal --- */
+        .table-card {
+            transition: background-color 300ms ease-in-out;
+            border: 1px solid transparent;
+        }
+        html.light .table-card {
+            background-color: #f9fafb; /* gray-50 */
+            border-color: #e5e7eb; /* gray-200 */
+        }
+        html.dark .table-card {
+            background-color: #1f2937; /* gray-800 */
+            border-color: #374151; /* gray-700 */
+        }
+
+        /* --- Table Styles for Modal --- */
+        .viewer-content .data-table {
+            min-width: 100%;
+            border-collapse: separate; /* For rounded rows */
+            border-spacing: 0 4px; /* Space between rows */
+        }
+        .viewer-content .data-table th,
+        .viewer-content .data-table td {
+            padding: 10px 14px;
+            text-align: left;
+            white-space: nowrap;
+            background: transparent;
+        }
+
+        /* Light Mode Table */
+        html.light .viewer-content .data-table thead {
+            background-color: #f3f4f6; /* gray-100 */
+        }
+        html.light .viewer-content .data-table th {
+            color: #4b5563; /* gray-600 */
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+        }
+
+        /* Dark Mode Table */
+        html.dark .viewer-content .data-table thead {
+            background-color: rgba(55, 65, 81, 0.5); /* gray-700 with transparency */
+        }
+        html.dark .viewer-content .data-table th {
+            color: #d1d5db; /* gray-300 */
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+        }
+
+        /* NEW glassy row hover effect */
+        .viewer-content .data-table tbody tr {
+            transition: transform 150ms ease-in-out;
+        }
+        .viewer-content .data-table tbody tr:hover {
+            transform: scale(1.01); /* Subtle lift effect */
+            z-index: 10;
+            position: relative;
+        }
+        .viewer-content .data-table tbody tr:hover td {
+            background: var(--glass-hover-bg);
+        }
+        .viewer-content .data-table tbody tr:hover td:first-child {
+            border-top-left-radius: 16px;
+            border-bottom-left-radius: 16px;
+        }
+        .viewer-content .data-table tbody tr:hover td:last-child {
+            border-top-right-radius: 16px;
+            border-bottom-right-radius: 16px;
+        }
+
+        /* --- Info Pill --- */
+        .info-pill {
+            display: inline-block;
+            padding: 4px 12px;
+            font-size: 0.75rem; /* 12px */
+            font-weight: 500;
+            border-radius: 9999px;
+        }
+        html.light .info-pill {
+            background-color: #e5e7eb; /* gray-200 */
+            color: #4b5563; /* gray-600 */
+        }
+        html.dark .info-pill {
+            background-color: #374151; /* gray-700 */
+            color: #d1d5db; /* gray-300 */
+        }
+
+        /* --- Modal Close Button --- */
+        .theme-aware-close-button {
+            transition: background-color 200ms ease, transform 150ms ease;
+        }
+        html.light .theme-aware-close-button {
+            background-color: #e5e7eb; /* gray-200 */
+            color: #4b5563; /* gray-600 */
+        }
+        html.light .theme-aware-close-button:hover {
+            background-color: #d1d5db; /* gray-300 */
+            transform: scale(1.05);
+        }
+        html.dark .theme-aware-close-button {
+            background-color: #374151; /* gray-700 */
+            color: #d1d5db; /* gray-300 */
+        }
+        html.dark .theme-aware-close-button:hover {
+            background-color: #4b5563; /* gray-600 */
+            transform: scale(1.05);
+        }
+
+        /* --- Mobile Menu Accordion --- */
+        #mobile-menu details > summary {
+            list-style: none; /* Remove default arrow */
+        }
+        #mobile-menu details > summary::-webkit-details-marker {
+            display: none; /* Remove default arrow for Chrome/Safari */
+        }
+        #mobile-menu .accordion-arrow {
+            transition: transform 0.2s ease-in-out;
+        }
+        #mobile-menu details[open] .accordion-arrow {
+            transform: rotate(180deg);
+        }
+
+        /* --- Search Input --- */
+        .search-input {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            transition: all 300ms cubic-bezier(0.4, 0.0, 0.2, 1);
+            color: var(--text-color);
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: var(--glass-border);
+            box-shadow: 0 0 0 2px var(--glass-shadow-1);
+            background: var(--glass-hover-bg);
+        }
+        .search-input::placeholder {
+           color: var(--text-color);
+           opacity: 0; /* Hide placeholder initially */
+           transition: opacity 300ms ease;
+        }
+        .search-input:focus::placeholder {
+            opacity: 0.6;
+        }
+        
+        /* --- Form Inputs --- */
+        .form-input {
+            background: transparent;
+            border-width: 1px;
+            -webkit-appearance: none;
+            appearance: none;
+            transition: all 150ms ease-in-out;
+            color: var(--text-color);
+        }
+        html.light .form-input {
+            border-color: rgba(0,0,0,0.2);
+        }
+        html.dark .form-input {
+            border-color: rgba(255,255,255,0.2);
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: var(--text-color);
+            box-shadow: 0 0 0 2px var(--glass-shadow-1);
+            background: var(--glass-bg);
+        }
+        .form-input::placeholder {
+          color: var(--text-color);
+          opacity: 0.5; 
+        }
+
+        /* --- Search Results --- */
+        .search-result-item {
+            display: block;
+            padding: 12px 16px;
+            border-radius: 8px;
+            transition: background-color 150ms ease;
+            cursor: pointer;
+        }
+        html.light .search-result-item:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+        html.dark .search-result-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .search-result-item h3 {
+            font-weight: 600;
+        }
+        .search-result-item p {
+            font-size: 0.875rem; /* text-sm */
+            opacity: 0.7;
+            margin-top: 2px;
+            /* Truncate long text */
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .search-results-list::-webkit-scrollbar { width: 5px; }
+        .search-results-list::-webkit-scrollbar-track { background: transparent; }
+        html.light .search-results-list::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
+        html.dark .search-results-list::-webkit-scrollbar-thumb { background: #555; border-radius: 10px; }
+
+        /* --- Calendar Styles --- */
+        #calendar-day-names {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            margin-bottom: 8px;
+        }
+        #calendar-day-names div {
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.875rem;
+            opacity: 0.8;
+        }
+        #calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+        }
+        .calendar-day {
+            position: relative;
+            padding-top: 100%; /* Creates a square aspect ratio */
+            border-radius: 12px;
+            transition: background-color 150ms ease;
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+        .day-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        html.light .calendar-day {
+            border-color: #d1d5db; /* gray-300 - brighter */
+        }
+        html.dark .calendar-day {
+            border-color: #4b5563; /* gray-600 - brighter */
+        }
+        .calendar-day.other-month .day-content {
+            opacity: 0.3;
+            pointer-events: none;
+        }
+        .calendar-day.today {
+            border-width: 2px;
+        }
+        html.light .calendar-day.today {
+            border-color: #4f46e5 !important; /* Brighter blue/indigo for light mode */
+        }
+        html.dark .calendar-day.today {
+            border-color: #a5b4fc !important; /* Brighter indigo for dark mode */
+        }
+        .calendar-day .day-number {
+            font-weight: 500;
+        }
+        .day-content {
+            overflow: hidden;
+        }
+        .event-list {
+            margin-top: 4px;
+            font-size: 0.75rem;
+            line-height: 1.2;
+        }
+        .event-item {
+            padding: 2px 5px;
+            border-radius: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 2px;
+            font-weight: 500;
+        }
+        /* --- Brighter Event Colors --- */
+        html.light .event-item-blue { background-color: #3b82f6; color: #ffffff; }
+        html.dark .event-item-blue { background-color: #60a5fa; color: #1e3a8a; }
+        html.light .event-item-green { background-color: #22c55e; color: #ffffff; }
+        html.dark .event-item-green { background-color: #4ade80; color: #064e3b; }
+        html.light .event-item-purple { background-color: #8b5cf6; color: #ffffff; }
+        html.dark .event-item-purple { background-color: #a78bfa; color: #4c1d95; }
+        html.light .event-item-orange { background-color: #f97316; color: #ffffff; }
+        html.dark .event-item-orange { background-color: #fb923c; color: #7c2d12; }
+        html.light .event-item-gray { background-color: #6b7280; color: #ffffff; }
+        html.dark .event-item-gray { background-color: #9ca3af; color: #1f2937; }
+
+
+    </style>
+</head>
+<body class="antialiased">
+
+    <div id="page-content" aria-hidden="false">
+        <!-- Header Section -->
+        <header id="header" class="liquid-glass fixed top-2 left-2 right-2 z-40">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-24">
+                    <!-- Logo -->
+                    <div class="flex-shrink-0">
+                        <a href="#" id="logo-link" aria-label="Return to homepage">
+                            <img class="h-20 w-auto sm:h-24" src="https://i0.wp.com/lighthousecfcwarwick.com/wp-content/uploads/2020/06/cropped-The-Lighthouse-Circle-Badge-Logo-Side-Image_Torn-White_Grey-Font-1000-x-300-1.png?w=589&ssl=1" alt="Lighthouse CFC Logo">
+                        </a>
+                    </div>
+
+                    <!-- Desktop Navigation -->
+                    <nav id="desktop-nav" class="hidden lg:flex lg:items-center lg:space-x-2 relative">
+                        <div id="nav-hover-pill" class="liquid-glass"></div>
+                        <a href="#" id="home-link" class="nav-link px-4 py-2 text-sm font-medium">Home</a>
+                        
+                        <!-- About Dropdown -->
+                        <div class="relative dropdown">
+                            <button class="dropdown-toggle px-4 py-2 text-sm font-medium flex items-center">
+                                <span>About</span>
+                                <svg class="ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><title>Expand About Menu</title><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                            </button>
+                            <div class="dropdown-content liquid-glass mt-2 p-2 space-y-1">
+                                <a href="#" class="page-link" data-page="mission" data-type="about">Our Vision</a>
+                                <a href="#" class="page-link" data-page="story" data-type="about">Our Pastor</a>
+                                <a href="#" class="page-link" data-page="believe" data-type="about">What We Believe?</a>
+                            </div>
+                        </div>
+                        
+                        <a href="#" id="calendar-link" class="nav-link px-4 py-2 text-sm font-medium">Calendar</a>
+                        <a href="#" class="page-link nav-link px-4 py-2 text-sm font-medium" data-page="contact" data-type="about">Contact Us</a>
+                        <a href="#" class="page-link nav-link px-4 py-2 text-sm font-medium" data-page="giving" data-type="about">Giving</a>
+                        <a href="https://www.youtube.com/@lighthousecfcwarwick" target="_blank" class="nav-link px-4 py-2 text-sm font-medium flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="#EF4444" viewBox="0 0 24 24"><title>YouTube Icon</title><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                            Live
+                        </a>
+                        <div class="relative ml-2 flex items-center search-container">
+                            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 z-10 pointer-events-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                            </span>
+                            <input id="search-input" type="search" placeholder="Search..." class="search-input relative w-10 h-10 rounded-full py-2 pl-10 pr-4 text-sm focus:w-48 cursor-pointer focus:cursor-text">
+                            
+                            <!-- Search Results Dropdown -->
+                            <div id="search-results-container" class="hidden absolute top-full right-0 mt-3 w-72 z-50">
+                                <div class="liquid-glass p-2">
+                                    <div id="search-results-list" class="search-results-list space-y-1 max-h-80 overflow-y-auto">
+                                        <!-- Search results will be injected here -->
+                                    </div>
+                                    <p id="no-results-message" class="hidden p-4 text-center opacity-70">No results found.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </nav>
+
+                    <!-- Mobile Menu Button -->
+                    <div class="lg:hidden flex items-center space-x-4">
+                        <button id="mobile-menu-button" class="liquid-glass liquid-glass-button p-2" aria-label="Open main menu" aria-expanded="false" aria-controls="mobile-menu">
+                            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                                <title>Menu Icon</title>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mobile Menu -->
+            <div id="mobile-menu" class="hidden lg:hidden p-4">
+                <nav class="liquid-glass rounded-lg p-4 space-y-2">
+                    <div class="relative search-container">
+                        <span class="absolute left-3 top-1/2 -translate-y-1/2 z-10 pointer-events-none">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                        </span>
+                        <input id="mobile-search-input" type="search" placeholder="Search..." class="search-input w-full rounded-lg py-2.5 pl-10 pr-4 text-base">
+                    </div>
+                    <div id="mobile-search-results-container" class="hidden mt-2">
+                        <div class="liquid-glass p-2">
+                           <div id="mobile-search-results-list" class="search-results-list space-y-1 max-h-60 overflow-y-auto">
+                                <!-- Mobile search results go here -->
+                           </div>
+                           <p id="mobile-no-results-message" class="hidden p-4 text-center opacity-70">No results found.</p>
+                        </div>
+                    </div>
+                    <a href="#" id="mobile-home-link" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-white/20">Home</a>
+                    
+                    <!-- Mobile About Accordion -->
+                    <details>
+                        <summary class="flex justify-between items-center px-3 py-2 rounded-md text-base font-medium hover:bg-white/20 cursor-pointer">
+                            <span>About</span>
+                             <svg class="accordion-arrow ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                        </summary>
+                        <div class="pl-4 mt-2 space-y-1" id="mobile-about-links">
+                            <!-- JS will populate this -->
+                        </div>
+                    </details>
+
+                    <a href="#" id="mobile-calendar-link" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-white/20">Calendar</a>
+                    <a href="#" class="mobile-page-link block px-3 py-2 rounded-md text-base font-medium hover:bg-white/20" data-page="contact" data-type="about">Contact Us</a>
+                    <a href="#" class="mobile-page-link block px-3 py-2 rounded-md text-base font-medium hover:bg-white/20" data-page="giving" data-type="about">Giving</a>
+                    <a href="https://www.youtube.com/@lighthousecfcwarwick" target="_blank" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-white/20">Live</a>
+                </nav>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="pt-32">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <!-- Hero Section / Slider -->
+                <div class="liquid-glass p-2 sm:p-4 mt-8 scroll-animate">
+                    <div class="swiper aspect-video rounded-lg">
+                        <div class="swiper-wrapper">
+                            <!-- Image 1 -->
+                            <div class="swiper-slide">
+                                <a href="https://www.youtube.com/@lighthousecfcwarwick" target="_blank" rel="noopener noreferrer" class="block w-full h-full">
+                                    <img src="https://lighthousecfcwarwick.com/wp-content/uploads/2025/05/Creamy-Minimalist-Thank-you-post-for-YouTube-subscribe_20250531_080929_0000.jpg" class="w-full h-full object-cover" alt="YouTube channel.">
+                                </a>
+                            </div>
+                            <!-- Image 2 -->
+                            <div class="swiper-slide">
+                                <img src="https://lighthousecfcwarwick.com/wp-content/uploads/2024/02/20240207_055811_0000.jpg" class="w-full h-full object-cover" alt="Church announcement graphic.">
+                            </div>
+                            <!-- Image 3 -->
+                            <div class="swiper-slide">
+                                <a href="https://give.tithe.ly/my-church" target="_blank" rel="noopener noreferrer" class="block w-full h-full">
+                                <img src="https://lighthousecfcwarwick.com/wp-content/uploads/2024/01/Lighthouse-Announcements-Apri-May-2023_20240125_050129_0000.jpg" class="w-full h-full object-contain" alt="Ways To Give.">
+                                </a>
+                            </div>
+                            <!-- Image 4 -->
+                            <div class="swiper-slide">
+                                <a href="https://youtube.com/playlist?list=PLJkCIBz_S1-8oyw78b7l4ikTy5XugSM4O&si=ba4QNtEJFn6jkxAR" target="_blank" rel="noopener noreferrer" class="block w-full h-full">
+                                    <img src="https://tse1.mm.bing.net/th/id/OIP.U6wnFOLU1KNMvld3sRRSiwHaEL?rs=1&pid=ImgDetMain&o=7&rm=3" class="w-full h-full object-cover" alt="Uprooting Rejection">
+                                </a>
+                            </div>
+                             <!-- Image 5 -->
+                             <div class="swiper-slide">
+                                <a href="" target="_blank" rel="noopener noreferrer" class="block w-full h-full">
+                                    <img src="https://scontent-bos5-1.xx.fbcdn.net/v/t39.30808-6/555453968_1135952341871804_6202060119878620164_n.jpg?_nc_cat=108&ccb=1-7&_nc_sid=833d8c&_nc_ohc=eHu4bW2hT5YQ7kNvwGHIZaX&_nc_oc=Adn-H_Rc-z96AQ0MisNxy4G-1KSsgeJoGzQ-DDkjNBlmUjY-dd28LuVZ8OZ7-hlpZMs&_nc_zt=23&_nc_ht=scontent-bos5-1.xx&_nc_gid=68usEWS2ZSVeuAfXcjepRA&oh=00_AffeB_0EmHLKN9k0ue52o1ME7GlPV_Qydy_P0zS_xEv51Q&oe=68F5A99A" class="w-full h-full object-cover" alt="Fall Fest">
+                                </a>
+                            </div>
+                        </div>
+                        <div class="swiper-pagination"></div>
+                        <div class="swiper-button-prev">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6"><title>Previous Slide</title><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
+                        </div>
+                        <div class="swiper-button-next">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6"><title>Next Slide</title><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Photo Grid Section -->
+                <section class="my-16 md:my-24">
+                    <h1 class="text-3xl sm:text-4xl font-bold text-center mb-8 sm:mb-12 scroll-animate">Explore</h1>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                        <!-- Image 1 -->
+                        <a href="#" class="gallery-item block liquid-glass aspect-square p-2 scroll-animate transition-transform duration-200 hover:scale-105" data-story="1">
+                            <img src="https://i0.wp.com/lighthousecfcwarwick.com/wp-content/uploads/2023/11/Prayer-request.jpg?fit=1045%2C700&ssl=1" alt="A graphic that says Prayer request with a bible verse." class="w-full h-full object-cover rounded-lg">
+                        </a>
+                        <!-- Image 2 -->
+                        <a href="#" class="gallery-item block liquid-glass aspect-square p-2 scroll-animate transition-transform duration-200 hover:scale-105" data-story="2">
+                            <img src="https://i0.wp.com/lighthousecfcwarwick.com/wp-content/uploads/2023/11/Ways-to-Give-1.jpg?fit=1045%2C700&ssl=1" alt="A graphic that says Ways to Give." class="w-full h-full object-cover rounded-lg">
+                        </a>
+                        <!-- Image 3 -->
+                        <a href="#" class="gallery-item block liquid-glass aspect-square p-2 scroll-animate transition-transform duration-200 hover:scale-105" data-story="3">
+                            <img src="https://i0.wp.com/lighthousecfcwarwick.com/wp-content/uploads/2021/08/New-Believer.jpg?fit=1045%2C700&ssl=1" alt="A graphic that says Welcome to the family, New Believer." class="w-full h-full object-cover rounded-lg">
+                        </a>
+                        <!-- Image 4 -->
+                        <a href="#" class="gallery-item block liquid-glass aspect-square p-2 scroll-animate transition-transform duration-200 hover:scale-105" data-story="4">
+                            <img src="https://i0.wp.com/lighthousecfcwarwick.com/wp-content/uploads/2021/08/Template-We-are.jpg?fit=1045%2C700&ssl=1" alt="CFM." class="w-full h-full object-cover rounded-lg">
+                        </a>
+                        <!-- Image 5 -->
+                        <a href="#" class="gallery-item block liquid-glass aspect-square p-2 scroll-animate transition-transform duration-200 hover:scale-105" data-story="5">
+                            <img src="https://i0.wp.com/lighthousecfcwarwick.com/wp-content/uploads/2023/10/Lighthouse-graphics-1024x1024-1.jpg?fit=1024%2C1024&ssl=1" alt="Community Outreach." class="w-full h-full object-cover rounded-lg">
+                        </a>
+                        <!-- Image 6 -->
+                        <a href="#" class="gallery-item block liquid-glass aspect-square p-2 scroll-animate transition-transform duration-200 hover:scale-105" data-story="6">
+                            <img src="https://i0.wp.com/lighthousecfcwarwick.com/wp-content/uploads/2021/08/Template-Times-2.jpg?fit=1024%2C1024&ssl=1" alt="A graphic showing Sunday service times at 10 AM." class="w-full h-full object-cover rounded-lg">
+                        </a>
+                        <!-- Image 7 -->
+                        <a href="#" class="gallery-item block liquid-glass aspect-square p-2 scroll-animate transition-transform duration-200 hover:scale-105" data-story="7">
+                            <img src="https://i0.wp.com/lighthousecfcwarwick.com/wp-content/uploads/2023/11/Prayer-request-1.jpg?fit=1024%2C1024&ssl=1" alt="Media." class="w-full h-full object-cover rounded-lg">
+                        </a>
+                        <!-- Image 8 -->
+                        <a href="#" class="gallery-item block liquid-glass aspect-square p-2 scroll-animate transition-transform duration-200 hover:scale-105" data-story="8">
+                            <img src="https://scontent-bos5-1.xx.fbcdn.net/v/t39.30808-6/327266675_5506975239431850_2593072992107119277_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=NZnY3zytZpIQ7kNvwHIFvLu&_nc_oc=AdkG2PjMGAGmrtDxvKj28x6g6tVQtHRtMbOZNk1qxsXkI6c4wFJDfiDR5Ln2HJs-Eqw&_nc_zt=23&_nc_ht=scontent-bos5-1.xx&_nc_gid=9IJFfPlN5pL-nJLH5GWp_A&oh=00_Afc3iWh_kr9zBf_QM5bx6dbrWweOHBnxc5fH3Wfui8otIA&oe=68F55FE6" alt="Gallery." class="w-full h-full object-cover rounded-lg">
+                        </a>
+                    </div>
+                </section>
+
+                <!-- Map Section -->
+                <section class="my-16 md:my-24 scroll-animate">
+                    <h2 class="text-3xl sm:text-4xl font-bold text-center mb-8 sm:mb-12">Our Location</h2>
+                    <div class="liquid-glass p-2 sm:p-4">
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d186.1498201178804!2d-71.42868603041553!3d41.7119487988623!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89e44d2d0668856f%3A0x336a90f6f4058aed!2sThe%20Lighthouse%20Christian%20Fellowship%20Church!5e0!3m2!1sen!2sus!4v1759765329265!5m2!1sen!2sus" width="100%" height="450" style="border:0; border-radius: 10px;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    </div>
+                </section>
+
+                <!-- Find a Church Section -->
+                <section class="my-16 md:my-24 text-center scroll-animate">
+                    <a href="https://cfmmap.org/" target="_blank" rel="noopener noreferrer" class="inline-block liquid-glass liquid-glass-button p-4 px-6 text-lg font-semibold transition-transform duration-200 hover:scale-105">
+                        Looking for a fellowship church near you?
+                    </a>
+                </section>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="text-center py-8 mt-8 scroll-animate">
+            <p class="text-sm opacity-70">&copy; Lighthouse CFC Warwick, 2025</p>
+               <button id="theme-toggle-button" aria-label="Toggle light and dark mode" class="mx-auto mt-6 px-5 py-2 rounded-full text-sm font-semibold">
+                Change Theme
+            </button>
+        </footer>
+
+    </div>
+
+    <!-- Story Viewer Modal -->
+    <div id="story-viewer" class="viewer-modal fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/50 backdrop-blur-sm hidden" role="dialog" aria-modal="true">
+        <div id="story-viewer-content" class="viewer-content liquid-glass relative p-6 sm:p-8 pt-12 w-full max-w-5xl max-h-[90vh] overflow-y-auto text-center">
+            <button id="close-story-button" class="theme-aware-close-button absolute top-3 left-3 p-2 rounded-full" aria-label="Close Story">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <title>Close</title>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+            <!-- Content is injected by JS -->
+            <div id="story-text-container" class="space-y-4">
+                <h1 id="story-title" class="text-3xl sm:text-4xl font-bold mb-6"></h1>
+                <div id="story-paragraph" class="text-base sm:text-lg leading-relaxed opacity-90"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Page Content Viewer Modal -->
+    <div id="page-viewer" class="viewer-modal fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/50 backdrop-blur-sm hidden" role="dialog" aria-modal="true">
+        <div id="page-viewer-content" class="viewer-content liquid-glass relative p-6 sm:p-8 pt-12 w-full max-w-4xl max-h-[90vh] overflow-y-auto text-center">
+             <button id="close-page-button" class="theme-aware-close-button absolute top-3 left-3 p-2 rounded-full" aria-label="Close Page">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <title>Close</title>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+             </button>
+             <h1 id="page-title" class="text-3xl sm:text-4xl font-bold mb-6"></h1>
+             <div id="page-content-area" class="space-y-4 text-base sm:text-lg leading-relaxed opacity-90"></div>
+             <div id="page-image-area" class="mt-6 hidden"></div>
+        </div>
+    </div>
+
+    <!-- Calendar Viewer Modal -->
+    <div id="calendar-viewer" class="viewer-modal fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/50 backdrop-blur-sm hidden" role="dialog" aria-modal="true">
+        <div class="viewer-content liquid-glass relative p-6 sm:p-8 pt-12 w-full max-w-6xl max-h-[90vh] overflow-y-auto">
+            <button id="close-calendar-button" class="theme-aware-close-button absolute top-3 left-3 p-2 rounded-full" aria-label="Close Calendar">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <title>Close</title>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+            <div id="calendar-container">
+                <!-- Calendar Header -->
+                <div class="flex items-center justify-center mb-6">
+                    <button id="prev-month-btn" class="theme-aware-close-button p-2 rounded-full" aria-label="Previous Month">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                    </button>
+                    <h2 id="month-year-header" class="text-lg sm:text-xl font-bold text-center mx-4"></h2>
+                    <button id="next-month-btn" class="theme-aware-close-button p-2 rounded-full" aria-label="Next Month">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </button>
+                </div>
+                <!-- Calendar Grid -->
+                <div id="calendar-day-names"></div>
+                <div id="calendar-grid"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Day Detail Viewer Modal -->
+    <div id="day-viewer" class="viewer-modal fixed inset-0 z-[60] flex items-center justify-center p-4 bg-gray-900/50 backdrop-blur-sm hidden" role="dialog" aria-modal="true">
+        <div class="viewer-content liquid-glass relative p-6 sm:p-8 pt-12 w-full max-w-md max-h-[90vh] overflow-y-auto">
+             <button id="close-day-button" class="theme-aware-close-button absolute top-3 left-3 p-2 rounded-full" aria-label="Close Day View">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <title>Close</title>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+             </button>
+             <h1 id="day-viewer-title" class="text-lg sm:text-xl font-bold mb-6 text-center"></h1>
+             <div id="day-viewer-content-area" class="space-y-4">
+                <!-- Events will be injected here by JS -->
+             </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            
+            // --- Content Data Store ---
+            const galleryStories = {
+                '1': { title: 'Prayer Request', text: '<p class="mb-2">“Therefore I tell you, whatever you ask in prayer, believe that you have received it, and it will be yours.”</p><em class="text-sm opacity-90 block mb-4">Mark 11:24 ESV.</em><p class="mb-4">Have a prayer request?<br>Contact us below, and we would love to join with you in prayer.</p><p><strong>Email:</strong> lighthousecfcwarwick@outlook.com<br><strong>Phone:</strong> (401) 255-4030</p>', image: 'https://i0.wp.com/lighthousecfcwarwick.com/wp-content/uploads/2023/11/Prayer-request.jpg?fit=1045%2C700&ssl=1' },
+                '2': {
+                    title: 'Online Giving',
+                    text: `
+                        <div class="text-left max-w-2xl mx-auto">
+                            <p class="mb-4"><strong>Online Giving</strong></p>
+                            <p class="mb-4">"But my God shall supply all your need according to his riches in glory" by Christ Jesus.</p>
+                            <p class="mb-4">This often claimed and quoted promise in Philippians 4:19 was linked to and based upon the generous sacrificial giving sent to Paul “once and again” by that faithful body of believers. “Not because I desire a gift,” says the apostle in verse 17, “but I desire fruit that may abound to your account.” The precious souls whose lives are touched by the Gospel are the fruit – not only of those who go forth bearing precious seed – but also of those who remain behind to hold the financial ropes.</p>
+                            <p class="mb-4">Our mission to reach lost souls for Jesus Christ is made possible by God’s grace and by your generosity. We extend our utmost gratitude in advance for your charitable contribution to The Lighthouse Christian Fellowship Church. Every dollar you give reaches the local community and a growing number of nations around the world.</p>
+                            <p class="mb-4">The Lighthouse Christian Fellowship Church is a 501(c)(3) nonprofit dedicated to reaching people with the Good News of the Gospel; all contributions made are tax-deductible. Our safe and secure online giving portal through Tithe.ly allows you to submit your tithe and world outreach commitments, and allows for other various contribution options.</p>
+                            <p class="mb-6">Give now and make an investment that will last for eternity.</p>
+                            <div class="border-t pt-6 mt-6" style="border-color: var(--glass-border);">
+                                <h3 class="font-bold text-lg mb-4">WAYS TO GIVE:</h3>
+                                <p class="mb-2"><strong>Online:</strong> Give online through the secure <a href="https://give.tithe.ly/" target="_blank" rel="noopener noreferrer" class="underline hover:opacity-75">Tithe.ly</a> website.</p>
+                                <p class="mb-2"><strong>Mail:</strong> 23 Benefit St. #9, Warwick, RI 02886</p>
+                                <p><strong>Make checks/money orders payable to:</strong><br>The Lighthouse CFC Church</p>
+                            </div>
+                        </div>
+                    `,
+                    image: 'https://i0.wp.com/lighthousecfcwarwick.com/wp-content/uploads/2023/11/Ways-to-Give-1.jpg?fit=1045%2C700&ssl=1'
+                },
+                '3': { 
+                    title: 'New Believer?', 
+                    text: '<div class="text-left max-w-2xl mx-auto"><p class="mb-4">Have you recently asked Jesus to be your Lord and Saviour? Are you searching for some clear answers about who God is, what He has and can do for you? Need a Bible? or do you simply need someone to talk to? We care and want you to know God in a personal way.</p><p class="mb-4">” as newborn babes, desire the pure milk of the word, that you may grow thereby…” (1 Peter 2:2 NKJV). In the text, coming to Christ is described metaphorically as a newborn baby requiring the nutrients of milk to survive and grow. Just as a newborn is dependent on care for survival, the same is true for a new believer. What does that care look like? It comes in the form of prayer, bible reading, and connecting to the church. Each of these components plays a vital role in your growth and development as a Christian.</p><h3 class="font-bold text-xl my-4">Prayer</h3><p class="mb-4">Prayer is simply talking to God. How awesome is it to have an audience with the Creator of the Universe, who not only responds but understand all areas of our lives. “Just as we build a relationship with others through communication, the same applies to a relationship with Christ. ” But I, O Lord, cry to you; in the morning my prayer comes before you.”(Psalm 88:13 ESV).</p><h3 class="font-bold text-xl my-4">The Bible</h3><p class="mb-4">If a friend allowed you to peer into her journal, you would immediately begin to know her far deeper than just an acquaintance. God gives you his journal and memoir of Himself, to you. It was written over the course of thousands of years through the hands of people who never met each other but yet provides a mysterious tapestry and unity that only God can orchestrate. When we spend time in the word, we get to know God in a deeper way. It is the story of his love and grace. It is filled with amazing stories and life-changing truths that can build you up in a way nothing else can. So pick up a Bible today, and start with the Gospel of John and discover Jesus, who is the Word made flesh.</p><h3 class="font-bold text-xl my-4">The Church</h3><p class="mb-4">The church is not a building but a gathering of believers. It is described as a family and even the bride of Christ. It is a place where a new believer can get established in the faith. It is also a place where we get to exercise our gifts and callings. It is the vehicle God has ordained to reach the world with the good news of the Gospel. Join us at The Lighthouse Christian Fellowship Church. We would love to meet you and welcome you to the family of God.</p></div>',
+                    image: 'https://i0.wp.com/lighthousecfcwarwick.com/wp-content/uploads/2021/08/New-Believer.jpg?fit=1045%2C700&ssl=1'
+                },
+                '4': { 
+                    title: 'Christian Fellowship Ministries', 
+                    text: `<div class="text-left max-w-3xl mx-auto space-y-4">
+                            <p>Christian Fellowship Churches Worldwide is the result of an unlikely group of ordinary men, touched by the finger of God that spread like fire across the globe.</p>
+                            <p>In 1970, Pastor Wayman Mitchell went to the small town of Prescott, Arizona. Shortly after arriving, God saved several young hippies who were very different from anyone in the church. But as they were welcomed, God began to pour out His Spirit on the congregation.</p>
+                            <p>As Pastor Mitchell sought to reach young people, they saw the possibilities of the “coffee-house” concert ministry. At the first concert they ever tried as an evangelistic tool, more than 200 young people attended, with many saved. Out of this, a regular concert ministry was birthed. 2 nights a week, bands played, testimonies of salvation were given, and the Gospel was preached, with many being saved each night.</p>
+                            <p>From the beginning, Pastor Mitchell understood that concert ministry was to be a training ground for ministry development. It was run by young people who were committed to Jesus and His church. From the beginning, people who had been radically converted sought to share with others what God had done in them. Personal evangelism began to be one of the basic foundations of the church. Then came impact teams, groups of people that would travel to other nearby cities to help people there experience what God was doing. Over time, God began to reveal His plan of discipleship, training young couples for ministry within a local church. In 1973, the first couple was launched directly into the ministry, and God blessed them! Churches then began to be planted throughout the Southwestern United States and then further across America, as converts prayed for the Gospel to be preached in their hometowns.</p>
+                            <p>In 1978, the first couple was planted into another nation – Australia; and we discovered the Gospel worked there, just like it did in the States. Shortly thereafter, churches were planted in Mexico, Holland, and Germany. As we came to understand God’s global mission, more and more churches began to be planted throughout the world. Today, over 2,700 churches have been planted in over 130 nations of the world, with the number growing daily.</p>
+                            <p>This church is a product of that vision and is working to see expansion in the short time that remains before Jesus’ return. God has given us a vision for the day we live in. Our message is simple, yet it is the cornerstone of all truth. Jesus Christ is the only hope for man’s salvation, and that is true with every person, in every nation, on the globe. In a world full of empty dreams and false promises lies a truth which grows stronger every year, and that is Jesus Christ and Him crucified!</p>
+                        </div>
+                        <div class="mt-8">
+                            <h3 class="font-bold text-2xl my-4 text-center">Nations with No Fellowship Church</h3>
+                            <div class="overflow-x-auto liquid-glass p-4" style="--glass-bg: rgba(0,0,0,0.1); --glass-border: rgba(255,255,255,0.1);">
+                                <table class="data-table w-full">
+                                    <thead class="sticky top-0 z-10">
+                                        <tr>
+                                            <th>Nation</th>
+                                            <th>Code</th>
+                                            <th class="text-right">Population (thousands)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr><td>Afghanistan</td><td>AF</td><td class="text-right">41,681.232</td></tr>
+                                        <tr><td>Algeria</td><td>DZ</td><td class="text-right">46,053.477</td></tr>
+                                        <tr><td>Anguilla</td><td>AI</td><td class="text-right">15.325</td></tr>
+                                        <tr><td>Azerbaijan</td><td>AZ</td><td class="text-right">10,370.49</td></tr>
+                                        <tr><td>Bahrain</td><td>BH</td><td class="text-right">1,811.996</td></tr>
+                                        <tr><td>Belarus</td><td>BY</td><td class="text-right">9,419.494</td></tr>
+                                        <tr><td>Bermuda</td><td>BM</td><td class="text-right">61.806</td></tr>
+                                        <tr><td>Bhutan</td><td>BT</td><td class="text-right">795.731</td></tr>
+                                        <tr><td>Bosnia and Herzegovina</td><td>BA</td><td class="text-right">3,237.054</td></tr>
+                                        <tr><td>British Virgin Islands</td><td>VG</td><td class="text-right">30.781</td></tr>
+                                        <tr><td>Brunei Darussalam</td><td>BN</td><td class="text-right">449.169</td></tr>
+                                        <tr><td>Cabo Verde</td><td>CV</td><td class="text-right">573.322</td></tr>
+                                        <tr><td>Caribbean</td><td>VI</td><td class="text-right">44,287.123</td></tr>
+                                        <tr><td>Cayman Islands</td><td>KY</td><td class="text-right">68.054</td></tr>
+                                        <tr><td>Central African Republic</td><td>CF</td><td class="text-right">5,119.136</td></tr>
+                                        <tr><td>Chad</td><td>TD</td><td class="text-right">17,921.183</td></tr>
+                                        <tr><td>China, Macao SAR</td><td>MO</td><td class="text-right">676.537</td></tr>
+                                        <tr><td>Comoros</td><td>KM</td><td class="text-right">926.492</td></tr>
+                                        <tr><td>Congo</td><td>CG</td><td class="text-right">5,940.746</td></tr>
+                                        <tr><td>Dem. People's Republic of Korea</td><td>KP</td><td class="text-right">26,089.814</td></tr>
+                                        <tr><td>Denmark</td><td>DK</td><td class="text-right">5,856.937</td></tr>
+                                        <tr><td>Djibouti</td><td>DJ</td><td class="text-right">1,029.701</td></tr>
+                                        <tr><td>Dominica</td><td>DM</td><td class="text-right">72.514</td></tr>
+                                        <tr><td>Estonia</td><td>EE</td><td class="text-right">1,317.216</td></tr>
+                                        <tr><td>Falkland Islands (Malvinas)</td><td>FK</td><td class="text-right">3.519</td></tr>
+                                        <tr><td>Faroe Islands</td><td>FO</td><td class="text-right">49.419</td></tr>
+                                        <tr><td>French Polynesia</td><td>PF</td><td class="text-right">285.792</td></tr>
+                                        <tr><td>Gibraltar</td><td>GI</td><td class="text-right">33.711</td></tr>
+                                        <tr><td>Greenland</td><td>GL</td><td class="text-right">57.064</td></tr>
+                                        <tr><td>Haiti</td><td>HT</td><td class="text-right">11,817.963</td></tr>
+                                        <tr><td>Holy See</td><td>VA</td><td class="text-right">0.808</td></tr>
+                                        <tr><td>Iran (Islamic Republic of)</td><td>IR</td><td class="text-right">86,975.821</td></tr>
+                                        <tr><td>Iraq</td><td>IQ</td><td class="text-right">43,170.808</td></tr>
+                                        <tr><td>Isle of Man</td><td>IM</td><td class="text-right">86.028</td></tr>
+                                        <tr><td>Jordan</td><td>JO</td><td class="text-right">10,312.321</td></tr>
+                                        <tr><td>Kiribati</td><td>KI</td><td class="text-right">125.501</td></tr>
+                                        <tr><td>Kuwait</td><td>KW</td><td class="text-right">4,427.849</td></tr>
+                                        <tr><td>Latvia</td><td>LV</td><td class="text-right">1,831.65</td></tr>
+                                        <tr><td>Lebanon</td><td>LB</td><td class="text-right">6,585.116</td></tr>
+                                        <tr><td>Libya</td><td>LY</td><td class="text-right">7,118.656</td></tr>
+                                        <tr><td>Liechtenstein</td><td>LI</td><td class="text-right">38.525</td></tr>
+                                        <tr><td>Luxembourg</td><td>LU</td><td class="text-right">648.973</td></tr>
+                                        <tr><td>Maldives</td><td>MV</td><td class="text-right">534.669</td></tr>
+                                        <tr><td>Mali</td><td>ML</td><td class="text-right">22,105.727</td></tr>
+                                        <tr><td>Mauritania</td><td>MR</td><td class="text-right">5,030.233</td></tr>
+                                        <tr><td>Mayotte</td><td>YT</td><td class="text-right">293.064</td></tr>
+                                        <tr><td>Monaco</td><td>MC</td><td class="text-right">40.042</td></tr>
+                                        <tr><td>Montenegro</td><td>ME</td><td class="text-right">627.766</td></tr>
+                                        <tr><td>Montserrat</td><td>MS</td><td class="text-right">4.946</td></tr>
+                                        <tr><td>Morocco</td><td>MA</td><td class="text-right">38,193.551</td></tr>
+                                        <tr><td>Nauru</td><td>NR</td><td class="text-right">10.918</td></tr>
+                                        <tr><td>Niue</td><td>NU</td><td class="text-right">1.619</td></tr>
+                                        <tr><td>Oman</td><td>OM</td><td class="text-right">5,412.488</td></tr>
+                                        <tr><td>Polynesia</td><td>PF</td><td class="text-right">697.681</td></tr>
+                                        <tr><td>Qatar</td><td>QA</td><td class="text-right">3,028.94</td></tr>
+                                        <tr><td>Réunion</td><td>RE</td><td class="text-right">914.382</td></tr>
+                                        <tr><td>Saint Barthélemy</td><td>BL</td><td class="text-right">9.988</td></tr>
+                                        <tr><td>Saint Helena</td><td>SH</td><td class="text-right">6.125</td></tr>
+                                        <tr><td>Saint Kitts and Nevis</td><td>KN</td><td class="text-right">54.175</td></tr>
+                                        <tr><td>Saint Martin (French part)</td><td>MF</td><td class="text-right">40.182</td></tr>
+                                        <tr><td>Saint Pierre and Miquelon</td><td>PM</td><td class="text-right">5.751</td></tr>
+                                        <tr><td>Saint Vincent and the Grenadines</td><td>VC</td><td class="text-right">111.806</td></tr>
+                                        <tr><td>San Marino</td><td>SM</td><td class="text-right">34.153</td></tr>
+                                        <tr><td>Sao Tome and Principe</td><td>ST</td><td class="text-right">232.132</td></tr>
+                                        <tr><td>Saudi Arabia</td><td>SA</td><td class="text-right">36,329.422</td></tr>
+                                        <tr><td>Sint Maarten (Dutch part)</td><td>SX</td><td class="text-right">44.54</td></tr>
+                                        <tr><td>Slovakia</td><td>SK</td><td class="text-right">5,458.099</td></tr>
+                                        <tr><td>Somalia</td><td>SO</td><td class="text-right">17,339.387</td></tr>
+                                        <tr><td>State of Palestine</td><td>PS</td><td class="text-right">5,469.363</td></tr>
+                                        <tr><td>Sudan</td><td>SD</td><td class="text-right">47,095.255</td></tr>
+                                        <tr><td>Sweden</td><td>SE</td><td class="text-right">10,275.854</td></tr>
+                                        <tr><td>Syrian Arab Republic</td><td>SY</td><td class="text-right">20,638.284</td></tr>
+                                        <tr><td>Tajikistan</td><td>TJ</td><td class="text-right">10,161.632</td></tr>
+                                        <tr><td>Tokelau</td><td>TK</td><td class="text-right">1.384</td></tr>
+                                        <tr><td>Tunisia</td><td>TN</td><td class="text-right">12,151.571</td></tr>
+                                        <tr><td>Turkey</td><td>TR</td><td class="text-right">85,957.26</td></tr>
+                                        <tr><td>Turkmenistan</td><td>TM</td><td class="text-right">6,283.194</td></tr>
+                                        <tr><td>Turks and Caicos Islands</td><td>TC</td><td class="text-right">40.25</td></tr>
+                                        <tr><td>Tuvalu</td><td>TV</td><td class="text-right">12.211</td></tr>
+                                        <tr><td>United States Virgin Islands</td><td>VI</td><td class="text-right">103.671</td></tr>
+                                        <tr><td>Wallis and Futuna Islands</td><td>WF</td><td class="text-right">10.896</td></tr>
+                                        <tr><td>Western Sahara</td><td>EH</td><td class="text-right">640.261</td></tr>
+                                        <tr><td>Yemen</td><td>YE</td><td class="text-right">31,818.24</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="text-center mt-8">
+                            <div class="liquid-glass inline-block p-2 px-4 rounded-full">
+                                <p class="text-sm opacity-80">This data was last updated late 2024</p>
+                            </div>
+                        </div>`, 
+                    image: 'https://i0.wp.com/lighthousecfcwarwick.com/wp-content/uploads/2021/08/Template-We-are.jpg?fit=1045%2C700&ssl=1' 
+                },
+                '5': { title: 'Community Outrech', 
+                        text: `<div class="swiper modal-swiper aspect-video rounded-lg">
+                        <div class="swiper-wrapper">
+                            <div class="swiper-slide"><img src="" class="w-full h-full object-cover" alt="1"></div>
+                        </div>
+                        <div class="swiper-pagination"></div>
+                        <div class="swiper-button-prev">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6"><title>Previous Slide</title><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
+                        </div>
+                        <div class="swiper-button-next">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6"><title>Next Slide</title><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
+                        </div>
+                    </div>`
+                },
+                '6': { 
+                    title: 'Weekly Schedule', 
+                    text: `
+                        <div class="space-y-8 text-left">
+                            <div class="flex justify-center">
+                                <div class="liquid-glass p-4 w-full max-w-md">
+                                    <div class="flex items-baseline justify-between text-center">
+                                        <h3 class="font-bold text-lg">Morning Prayer</h3>
+                                        <p class="text-base opacity-90 font-medium">Mon - Fri</p>
+                                        <p class="text-2xl font-bold">7:00 a.m.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                                <div>
+                                    <h3 class="font-bold text-2xl mb-4 border-b pb-2" style="border-color: var(--glass-border);">Sunday</h3>
+                                    <div class="space-y-3">
+                                        <div><p class="font-semibold">Prayer/Adult Sunday School</p><p class="text-lg opacity-80">10:00 a.m.</p></div>
+                                        <div><p class="font-semibold">Morning Worship</p><p class="text-lg opacity-80">11:00 a.m.</p></div>
+                                        <div><p class="font-semibold">Evening Prayer</p><p class="text-lg opacity-80">5:30 p.m.</p></div>
+                                        <div><p class="font-semibold">Evening Worship</p><p class="text-lg opacity-80">6:30 p.m.</p></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-2xl mb-4 border-b pb-2" style="border-color: var(--glass-border);">Thursday</h3>
+                                    <p class="font-semibold mb-3 text-lg">Midweek Service</p>
+                                    <div class="space-y-3">
+                                        <div><p class="font-semibold">Prayer</p><p class="text-lg opacity-80">6:00 p.m.</p></div>
+                                        <div><p class="font-semibold">Worship Service</p><p class="text-lg opacity-80">7:00 p.m.</p></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-2xl mb-4 border-b pb-2" style="border-color: var(--glass-border);">Saturday</h3>
+                                    <div class="space-y-3">
+                                        <div><p class="font-semibold">Prayer</p><p class="text-lg opacity-80">10:30 a.m.</p></div>
+                                        <div><p class="font-semibold">Outreach</p><p class="text-lg opacity-80">11:30 a.m.</p></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `, 
+                    image: 'https://i0.wp.com/lighthousecfcwarwick.com/wp-content/uploads/2021/08/Template-Times-2.jpg?fit=1024%2C1024&ssl=1' 
+                },
+                '7': { 
+                    title: 'Media Gallery', 
+                    text: `<div class="swiper modal-swiper aspect-video rounded-lg">
+                        <div class="swiper-wrapper">
+                            <div class="swiper-slide"><img src="" class="w-full h-full object-cover" alt="24"></div>
+                        </div>
+                        <div class="swiper-pagination"></div>
+                        <div class="swiper-button-prev">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6"><title>Previous Slide</title><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
+                        </div>
+                        <div class="swiper-button-next">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6"><title>Next Slide</title><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
+                        </div>
+                    </div>`
+                },
+                '8': { 
+                    title: 'Lighthouse Gallery', 
+                    text: `<div class="swiper modal-swiper aspect-video rounded-lg">
+                        <div class="swiper-wrapper">
+                           <div class="swiper-slide"><img src="https://scontent-bos5-1.xx.fbcdn.net/v/t39.30808-6/555453968_1135952341871804_6202060119878620164_n.jpg?_nc_cat=108&ccb=1-7&_nc_sid=833d8c&_nc_ohc=eHu4bW2hT5YQ7kNvwGHIZaX&_nc_oc=Adn-H_Rc-z96AQ0MisNxy4G-1KSsgeJoGzQ-DDkjNBlmUjY-dd28LuVZ8OZ7-hlpZMs&_nc_zt=23&_nc_ht=scontent-bos5-1.xx&_nc_gid=68usEWS2ZSVeuAfXcjepRA&oh=00_AffeB_0EmHLKN9k0ue52o1ME7GlPV_Qydy_P0zS_xEv51Q&oe=68F5A99A" class="w-full h-full object-cover" alt="Church gathering"></div>
+                            <div class="swiper-slide"><img src="https://placehold.co/2048x1152/dbeafe/1e3a8a?text=Stained+Glass" class="w-full h-full object-cover" alt="Stained Glass Window"></div>
+                            <div class="swiper-slide"><img src="https://placehold.co/2048x1152/e0e7ff/312e81?text=Church+Pews" class="w-full h-full object-cover" alt="Church Pews"></div>
+                            <div class="swiper-slide"><img src="https://placehold.co/2048x1152/f3e8ff/581c87?text=Congregation" class="w-full h-full object-cover" alt="Congregation Singing"></div>
+                            <div class="swiper-slide"><img src="https://placehold.co/2048x1152/fae8ff/701a75?text=Open+Bible" class="w-full h-full object-cover" alt="Open Bible on Pulpit"></div>
+                            <div class="swiper-slide"><img src="https://placehold.co/2048x1152/fff1f2/881337?text=Community" class="w-full h-full object-cover" alt="Community Gathering"></div>
+                            <div class="swiper-slide"><img src="https://placehold.co/2048x1152/fef2f2/991b1b?text=Prayer+Group" class="w-full h-full object-cover" alt="Prayer Group"></div>
+                            <div class="swiper-slide"><img src="https://placehold.co/2048x1152/fef3c7/b45309?text=Guiding+Light" class="w-full h-full object-cover" alt="Guiding Light"></div>
+                            <div class="swiper-slide"><img src="https://placehold.co/2048x1152/ecfdf5/065f46?text=Hope" class="w-full h-full object-cover" alt="Hopeful Abstract Light"></div>
+                            <div class="swiper-slide"><img src="https://placehold.co/2048x1152/f0f9ff/082f49?text=Sanctuary" class="w-full h-full object-cover" alt="Church Sanctuary"></div>
+                        </div>
+                        <div class="swiper-pagination"></div>
+                        <div class="swiper-button-prev">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6"><title>Previous Slide</title><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
+                        </div>
+                        <div class="swiper-button-next">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6"><title>Next Slide</title><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
+                        </div>
+                    </div>`
+                },
+            };
+            const eventPages = {
+            };
+            const aboutPages = {
+                'mission': { 
+                    title: 'Our Vision', 
+                    content: `<div class="text-left">
+                                <div class="space-y-6">
+                                    <div>
+                                        <h3 class="font-bold text-xl mb-2">Evangelism</h3>
+                                        <p>The Gospel taken outside the four walls is the absolute foundation of our church, in obedience to Mark 16:15 <em>And He said to them, ‘Go into all the world and preach the gospel to every creature’…</em> We emphasize personal evangelism and a large variety of outreaches to share the Gospel.</p>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-bold text-xl mb-2">Conversion</h3>
+                                        <p>We witness, testify, and preach for a decision. The Gospel has the power to save and transform lives. 1 Peter 1:23 <em>having been born again, not of corruptible seed but incorruptible, through the word of God which lives and abides forever…</em> The bulk of our congregation consists of people converted here by the Power of God.</p>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-bold text-xl mb-2">The Local Church</h3>
+                                        <p>God has placed everything necessary to accomplish His will in the setting of the local church. Ephesians 1:22-23 <em>…the church. Which is his body, the fullness of him who fills everything in every way.</em> God’s will is accomplished in us and through us as we connect and commit ourselves to a local church.</p>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-bold text-xl mb-2">Discipleship</h3>
+                                        <p>God intends for calling to Him, and for Him, to be accomplished through being trained and equipped within the setting of a local church. Therefore, the highest calling of a Pastor and congregation is to obey God’s command in Matthew 28:19-20 <em>Go therefore and make disciples of all the nations, baptizing them in the name of the Father and of the Son and of the Holy Spirit, teaching them to observe all things that I have commanded you; and lo, I am with you always, even to the end of the age.” Amen.</em></p>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-bold text-xl mb-2">Church Planting</h3>
+                                        <p>The result of disciples being raised up is that they are released into the harvest field. Matthew 9:37-38 <em>Then He said to His disciples, “The harvest truly is plentiful, but the laborers are few. Therefore, pray the Lord of the harvest to send out laborers into His harvest.”</em> We send couples to plant brand new congregations, with the aim of reproducing our vision in a new area.</p>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-bold text-xl mb-2">World Evangelism</h3>
+                                        <p>From the earliest Bible record, God’s vision is worldwide testimony and impact. The gospel message and the vision God has revealed to us is not simply American, but God-inspired; therefore, it works and is relevant in every nation and culture of the world. Mark 16:15 <em>all the world/every person…</em>Matthew 28:19 <em>all the nations…</em> Our job as believers, and as the local church, is to pray, train, invest, send, and support workers to go into all the world!</p>
+                                    </div>
+                                </div>
+                            </div>` 
+                },
+                'story': { 
+                    title: 'Testimony', 
+                    content: `<div class="text-left flex flex-col md:flex-row items-center md:items-start gap-8">
+                                <img src="https://i0.wp.com/lighthousecfcwarwick.com/wp-content/uploads/2025/06/2024043021332795-8248607946990964043.jpg?resize=1853%2C2048&ssl=1" alt="Pastor Frank Luna and family" class="w-48 h-48 rounded-2xl object-cover flex-shrink-0">
+                                <div class="text-center md:text-left space-y-4">
+                                    <p>(Pastor Frank, Belen, and Sydney Luna) April 21, 1982, marked a turning point for a broken young man living in El Paso, Texas. Pastor Frank Luna’s decision that day would ultimately alter the course of his life from a young man graduating in the top ten percent of his class, on his way to an Ivy League school, while deeply steeped in a life of drug addiction and alcoholism.</p>
+                                    <p>That turning point came when that young man accepted Jesus Christ as his Lord and Saviour. From that day forward, he became a completely changed individual, with a passion for Christ and helping others to know Jesus. The radical change was nothing short of a miracle!</p>
+                                    <p>A few years after giving his life to Christ, Pastor Luna met and married his wife, Belen, who attended The Door Church in El Paso, TX, as well. As a young and newly married couple, they became part of the staff as Door Directors at the church. Shortly after, in November of 1986, Pastor Frank and Belen answered the call of God on their lives to pioneer a church, first in Austin, Texas, then on to Springfield, Oregon, in July of 1989. After leaving a thriving work, that is still powering forward today, Pastor Luna and Belen returned to their home church, The Door, in El Paso, Texas, as the Associate Pastors.</p>
+                                    <p>In November of 1995, sight unseen, they traveled cross-country to Warwick, Rhode Island, to pioneer their third church.</p>
+                                    <p>For the last 25 years, Pastor Luna, Belen, and their daughter, Sydney, have faithfully served their congregation and community in Rhode Island, discipling and enabling people to pursue God’s will and plan for their lives.</p>
+                                </div>
+                            </div>` 
+                },
+                'believe': { 
+                    title: 'What We Believe?', 
+                    content: `<div class="text-left">
+                                <h3 class="font-bold text-xl my-4">Statements of Faith for the Lighthouse Christian Fellowship Church:</h3>
+                                <ul class="space-y-4 list-disc list-inside">
+                                    <li>There is only one God, and that He is eternally existent in Three Persons: Father, Son, and Holy Spirit.</li>
+                                    <li>God the Father is the Creator of the universe. He created man in His image for fellowship and called man back to Himself through Christ after the rebellion and fall of man.</li>
+                                    <li>Jesus Christ is eternally God. He was together with the Father and the Holy Spirit from the beginning, and through Him, all things were made. He left Heaven and became incarnate by the Holy Spirit of the Virgin Mary; henceforth, He is forever one Christ with two natures–God and man–in one Person.</li>
+                                    <li>The Holy Spirit is God, the Lord, and giver of life, who was active in the Old Testament and given to the Church in fullness at Pentecost. He empowers the saints for service and witness, cleanses man from the old nature, and conforms us to the image of Christ.</li>
+                                    <li>The baptism in the Holy Spirit with evidence of speaking in tongues, after conversion, releases the fullness of the Spirit and is evidenced by the fruits and gifts of the Holy Spirit.</li>
+                                    <li>In the Bible, containing the Old and New Testaments, it is alone the only infallible, inspired Word of God, and that its authority is ultimate, final, and eternal. It cannot be added to, subtracted from, or superseded in any regard. The Bible is the source of all doctrine, instruction, correction, and reproof. It contains all that is needed for guidance in godliness and practical Christian conduct.</li>
+                                    <li>Christ’s vicarious death on the cross paid the penalty for the sins of the whole world. Its benefits of healing (body, soul, and spirit) are provided for in the atonement as well.</li>
+                                    <li>Salvation is a free gift of God, based on the merits of the death of His Son, and is appropriated by faith. Salvation is affected by a person's repentance, belief in the Lord Jesus (justification), and personal acceptance of Him into one’s life as Lord and Savior (regeneration).</li>
+                                    <li>The Christian life is to be one of consecration, devotion, and holiness. The shortcomings of the individual are due to the still progressing sanctification of the saints. The Christian life is filled with trials, tests, and warfare against a spiritual enemy. For those abiding in Christ until their deaths or His return, the promises of eternal blessing in the presence of God are assured.</li>
+                                    <li>The Church is the Body of Christ, the habitation of God among the saints through the Spirit. Every believer born of the Spirit has a place in the church designated by God. A place where Christ is working in the lives of the called-out ones and calling ministers to the great commission to go into all the world and make disciples of every nation.</li>
+                                    <li>In the ordinances of Baptism and the Lord’s Supper. Baptism is the outward sign of what God has already done in the individual’s life and is a public testimony that the person now belongs to Christ. It is identifying with the death and resurrection of Jesus and is done in the name of the Father, the Son, and the Holy Spirit. The Lord’s Supper is a commemoration of the death of the Lord and is done in remembrance of Him until He comes again; it is a sign of our participation in Him.</li>
+                                    <li>In the bodily, personal, second coming of the Lord Jesus Christ, the resurrection of the saints, the millennium, and the final judgment. The final judgment will determine the eternal status of both the saints and the unbelievers, determined by their relationship to Jesus Christ.</li>
+                                </ul>
+                            </div>`
+                },
+                'contact': { title: 'Contact Us', content: '<div class="text-left max-w-lg mx-auto"><p class="mb-6 text-center">We would love to hear from you.</p><form id="contact-form" action="#" method="POST" class="space-y-4"><div class="grid grid-cols-1 sm:grid-cols-2 gap-4"><div><label for="first-name" class="block text-sm font-medium opacity-80 mb-1">First Name</label><input type="text" name="first-name" id="first-name" class="form-input w-full rounded-lg p-2.5" placeholder="" required></div><div><label for="last-name" class="block text-sm font-medium opacity-80 mb-1">Last Name</label><input type="text" name="last-name" id="last-name" class="form-input w-full rounded-lg p-2.5" placeholder="" required></div></div><div><label for="email" class="block text-sm font-medium opacity-80 mb-1">Email</label><input type="email" name="email" id="email" class="form-input w-full rounded-lg p-2.5" placeholder="" required></div><div><label for="phone" class="block text-sm font-medium opacity-80 mb-1">Phone Number</label><input type="tel" name="phone" id="phone" class="form-input w-full rounded-lg p-2.5" placeholder="" required></div><div><button type="submit" id="contact-submit-button" class="w-full liquid-glass liquid-glass-button font-bold py-3 px-4 rounded-lg mt-2">Submit</button></div></form><div class="text-center mt-8 border-t pt-6" style="border-color: var(--glass-border);"><p class="font-semibold mb-2">Or contact us directly:</p><p><strong>Phone:</strong> <a href="tel:4012554030" class="hover:underline">(401) 255-4030</a></p><p><strong>Email:</strong> <a href="mailto:lighthousecfcwarwick@outlook.com" class="hover:underline">lighthousecfcwarwick@outlook.com</a></p></div></div>' },
+                'giving': { title: 'Giving', text: galleryStories['2'].text } // Reuse giving story
+            };
+
+            const allSearchableContent = [
+                ...Object.entries(galleryStories).map(([id, data]) => ({ id, type: 'story', ...data })),
+                ...Object.entries(aboutPages).map(([id, data]) => ({ id, type: 'about', text: data.content, ...data })),
+            ];
+
+
+            // --- DOM Elements ---
+            const pageContentEl = document.getElementById('page-content');
+            const themeToggleButton = document.getElementById('theme-toggle-button');
+            const desktopNav = document.getElementById('desktop-nav');
+            const navLinks = desktopNav.querySelectorAll('.nav-link, .dropdown-toggle');
+            const navHoverPill = document.getElementById('nav-hover-pill');
+            const dropdowns = document.querySelectorAll('.dropdown');
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const galleryItems = document.querySelectorAll('.gallery-item');
+            const pageLinks = document.querySelectorAll('.page-link');
+            const mobilePageLinks = document.querySelectorAll('.mobile-page-link');
+            const homeLinks = [document.getElementById('home-link'), document.getElementById('mobile-home-link'), document.getElementById('logo-link')];
+
+            const storyViewer = document.getElementById('story-viewer');
+            const storyViewerContent = document.getElementById('story-viewer-content');
+            const closeStoryButton = document.getElementById('close-story-button');
+            const storyTitle = document.getElementById('story-title');
+            const storyParagraph = document.getElementById('story-paragraph');
+            
+            const pageViewer = document.getElementById('page-viewer');
+            const closePageButton = document.getElementById('close-page-button');
+            const pageTitle = document.getElementById('page-title');
+            const pageContentArea = document.getElementById('page-content-area');
+            const pageImageArea = document.getElementById('page-image-area');
+
+            const searchInput = document.getElementById('search-input');
+            const searchResultsContainer = document.getElementById('search-results-container');
+            const searchResultsList = document.getElementById('search-results-list');
+            const noResultsMessage = document.getElementById('no-results-message');
+            
+            const mobileSearchInput = document.getElementById('mobile-search-input');
+            const mobileSearchResultsContainer = document.getElementById('mobile-search-results-container');
+            const mobileSearchResultsList = document.getElementById('mobile-search-results-list');
+            const mobileNoResultsMessage = document.getElementById('mobile-no-results-message');
+            
+            const calendarViewer = document.getElementById('calendar-viewer');
+            const calendarLink = document.getElementById('calendar-link');
+            const mobileCalendarLink = document.getElementById('mobile-calendar-link');
+            const closeCalendarButton = document.getElementById('close-calendar-button');
+
+            const dayViewer = document.getElementById('day-viewer');
+            const closeDayButton = document.getElementById('close-day-button');
+            const dayViewerTitle = document.getElementById('day-viewer-title');
+            const dayViewerContentArea = document.getElementById('day-viewer-content-area');
+
+            // --- Calendar Event Data ---
+            const calendarEvents = {
+                recurring: {
+                    0: [ // Sunday
+                        { title: 'Prayer/Sunday School', time: '10:00 a.m.', color: 'blue' },
+                        { title: 'Morning Worship', time: '11:00 a.m.', color: 'blue' },
+                        { title: 'Evening Prayer', time: '5:30 p.m.', color: 'blue' },
+                        { title: 'Evening Worship', time: '6:30 p.m.', color: 'blue' },
+                    ],
+                    1: [ // Monday
+                        { title: 'Morning Prayer', time: '7:00 a.m.', color: 'gray' },
+                    ],
+                    2: [ // Tuesday
+                        { title: 'Morning Prayer', time: '7:00 a.m.', color: 'gray' },
+                    ],
+                    3: [ // Wednesday
+                        { title: 'Morning Prayer', time: '7:00 a.m.', color: 'gray' },
+                    ],
+                    4: [ // Thursday
+                        { title: 'Morning Prayer', time: '7:00 a.m.', color: 'gray' },
+                        { title: 'Prayer', time: '6:00 p.m.', color: 'green' },
+                        { title: 'Midweek Service', time: '7:00 p.m.', color: 'green' }
+                    ],
+                    5: [ // Friday
+                        { title: 'Morning Prayer', time: '7:00 a.m.', color: 'gray' },
+                    ],
+                    6: [ // Saturday
+                        { title: 'Prayer', time: '10:30 a.m.', color: 'purple' },
+                        { title: 'Outreach', time: '11:30 a.m.', color: 'purple' }
+                    ]
+                },
+                specific: {
+                    '2025-10-16': [{ title: 'Harvester Rally', color: 'orange' }],
+                    '2025-10-17': [{ title: 'Harvester Rally', color: 'orange' }],
+                    '2025-10-18': [{ title: 'Harvester Rally', color: 'orange' }],
+                    '2025-10-25': { events: [{ title: 'Fall Festival', time: '12 PM - 5 PM', color: 'orange' }], override: true },
+                }
+            };
+
+            // --- Theme Manager ---
+            const applyTheme = (theme) => {
+                if (theme === 'dark') {
+                    document.documentElement.classList.remove('light');
+                } else {
+                    document.documentElement.classList.add('light');
+                }
+            };
+            const currentTheme = localStorage.getItem('theme') || 'light';
+            applyTheme(currentTheme);
+
+            themeToggleButton.addEventListener('click', () => {
+                const newTheme = document.documentElement.classList.contains('light') ? 'dark' : 'light';
+                localStorage.setItem('theme', newTheme);
+                applyTheme(newTheme);
+            });
+            
+            // --- Modal Manager ---
+            let modalSwiper = null; // To hold the swiper instance for the modal
+            const openModal = (modal) => {
+                pageContentEl.classList.add('content-blur');
+                pageContentEl.setAttribute('aria-hidden', 'true');
+                modal.classList.remove('hidden');
+                setTimeout(() => modal.classList.add('is-visible'), 10);
+            };
+
+            const closeModal = (modal) => {
+                pageContentEl.classList.remove('content-blur');
+                pageContentEl.setAttribute('aria-hidden', 'false');
+                modal.classList.remove('is-visible');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                     // Destroy modal swiper if it exists
+                    if (modalSwiper) {
+                        modalSwiper.destroy(true, true);
+                        modalSwiper = null;
+                    }
+                }, 300);
+            };
+
+            // --- Navigation Pill ---
+            const updateNavPill = (target) => {
+                if (!target) {
+                    navHoverPill.style.opacity = '0';
+                    return;
+                }
+                navHoverPill.style.width = `${target.offsetWidth}px`;
+                navHoverPill.style.transform = `translateX(${target.offsetLeft}px)`;
+                navHoverPill.style.opacity = '1';
+            };
+
+            navLinks.forEach(link => {
+                link.addEventListener('mouseenter', (e) => updateNavPill(e.target));
+            });
+            desktopNav.addEventListener('mouseleave', () => updateNavPill(null));
+
+            // --- Dropdowns ---
+            dropdowns.forEach(dropdown => {
+                const toggle = dropdown.querySelector('.dropdown-toggle');
+                const content = dropdown.querySelector('.dropdown-content');
+                toggle.addEventListener('click', (e) => {
+                     e.stopPropagation();
+                     const isAlreadyOpen = content.classList.contains('is-open');
+                     document.querySelectorAll('.dropdown-content').forEach(d => d.classList.remove('is-open'));
+                     if (!isAlreadyOpen) {
+                        content.classList.add('is-open');
+                     }
+                });
+            });
+            window.addEventListener('click', () => {
+                document.querySelectorAll('.dropdown-content').forEach(d => d.classList.remove('is-open'));
+            });
+
+            // --- Mobile Menu ---
+            mobileMenuButton.addEventListener('click', () => {
+                const isExpanded = mobileMenuButton.getAttribute('aria-expanded') === 'true';
+                mobileMenuButton.setAttribute('aria-expanded', !isExpanded);
+                mobileMenu.classList.toggle('hidden');
+            });
+            const closeMobileMenu = () => {
+                 mobileMenuButton.setAttribute('aria-expanded', 'false');
+                 mobileMenu.classList.add('hidden');
+            };
+
+            // Populate mobile menu accordions from dropdowns
+            const populateMobileMenu = () => {
+                const aboutLinksContainer = document.getElementById('mobile-about-links');
+                const aboutDropdownLinks = document.querySelectorAll('.dropdown-content a[data-type="about"]');
+                aboutDropdownLinks.forEach(link => {
+                    const newLink = link.cloneNode(true);
+                    newLink.className = 'mobile-page-link block px-3 py-2 rounded-md text-base font-medium hover:bg-white/20';
+                    aboutLinksContainer.appendChild(newLink);
+                });
+            };
+            populateMobileMenu();
+
+            // --- Swiper Slider ---
+            const swiper = new Swiper('.swiper', {
+                loop: true,
+                autoplay: {
+                    delay: 10000,
+                    disableOnInteraction: false,
+                },
+                pagination: {
+                    el: '.swiper-pagination',
+                    clickable: true,
+                },
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                },
+            });
+            swiper.el.parentElement.addEventListener('mouseenter', () => swiper.el.parentElement.classList.add('swiper-container-hover'));
+            swiper.el.parentElement.addEventListener('mouseleave', () => swiper.el.parentElement.classList.remove('swiper-container-hover'));
+
+            // --- Scroll Animations ---
+            const animatedElements = document.querySelectorAll('.scroll-animate');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+            animatedElements.forEach(el => observer.observe(el));
+
+            // --- Story Viewer Logic ---
+            galleryItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const storyId = item.dataset.story;
+                    const storyData = galleryStories[storyId];
+                    if (storyData) {
+                        storyTitle.textContent = storyData.title;
+                        storyParagraph.innerHTML = storyData.text;
+
+                        openModal(storyViewer);
+                        
+                        // NEW: Generic swiper initialization
+                        const newSwiperEl = storyParagraph.querySelector('.modal-swiper');
+                        if (newSwiperEl) {
+                            setTimeout(() => {
+                                modalSwiper = new Swiper(newSwiperEl, {
+                                    loop: true,
+                                    autoplay: {
+                                        delay: 4000,
+                                        disableOnInteraction: false,
+                                    },
+                                    pagination: {
+                                        el: newSwiperEl.querySelector('.swiper-pagination'),
+                                        clickable: true,
+                                    },
+                                    navigation: {
+                                        nextEl: newSwiperEl.querySelector('.swiper-button-next'),
+                                        prevEl: newSwiperEl.querySelector('.swiper-button-prev'),
+                                    },
+                                });
+                            }, 100); // Small delay for modal transition
+                        }
+                    }
+                });
+            });
+            closeStoryButton.addEventListener('click', () => closeModal(storyViewer));
+            storyViewer.addEventListener('click', (e) => { if(e.target === storyViewer) closeModal(storyViewer); });
+
+            // --- Page Viewer Logic ---
+            const openPage = (pageKey, type) => {
+                const contentSource = type === 'event' ? eventPages : aboutPages;
+                const pageData = contentSource[pageKey] || aboutPages[pageKey]; // Fallback for combined pages like 'giving'
+                if (pageData) {
+                    pageTitle.textContent = pageData.title;
+                    pageContentArea.innerHTML = pageData.content || pageData.text; // Support both structures
+                    openModal(pageViewer);
+                    closeMobileMenu();
+
+                    // --- Interactive Contact Form Logic ---
+                    if (pageKey === 'contact') {
+                        const contactForm = document.getElementById('contact-form');
+                        if (contactForm) { // Ensure form exists before adding listeners
+                            const formContainer = contactForm.parentElement;
+                            
+                            // Handle form submission
+                            contactForm.addEventListener('submit', (e) => {
+                                e.preventDefault(); // Prevent actual form submission for this demo
+                                if (contactForm.checkValidity()) {
+                                    // Replace form with a success message
+                                    formContainer.innerHTML = `
+                                        <div class="text-center p-8">
+                                            <h2 class="text-2xl font-bold mb-4">Thank You!</h2>
+                                            <p>Your message has been sent successfully.</p>
+                                        </div>
+                                    `;
+                                } 
+                            });
+                        }
+                    }
+                }
+            };
+            document.body.addEventListener('click', (e) => {
+                const link = e.target.closest('.page-link, .mobile-page-link');
+                if (link) {
+                    e.preventDefault();
+                    openPage(link.dataset.page, link.dataset.type);
+                }
+            });
+            closePageButton.addEventListener('click', () => closeModal(pageViewer));
+            pageViewer.addEventListener('click', (e) => { if(e.target === pageViewer) closeModal(pageViewer); });
+
+            // --- Home Links ---
+            homeLinks.forEach(link => link.addEventListener('click', (e) => {
+                e.preventDefault();
+                closeModal(storyViewer);
+                closeModal(pageViewer);
+                closeModal(calendarViewer);
+                closeModal(dayViewer);
+                closeMobileMenu();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }));
+            
+            // --- Search Functionality ---
+            const handleSearch = (query, resultsList, noResultsMsg) => {
+                const lowerCaseQuery = query.toLowerCase().trim();
+                resultsList.innerHTML = '';
+                if (lowerCaseQuery.length < 2) {
+                    noResultsMsg.classList.add('hidden');
+                    return;
+                }
+                const results = allSearchableContent.filter(item => 
+                    item.title.toLowerCase().includes(lowerCaseQuery) ||
+                    (item.text && item.text.toLowerCase().includes(lowerCaseQuery))
+                );
+
+                if (results.length > 0) {
+                    noResultsMsg.classList.add('hidden');
+                    results.forEach(item => {
+                        const li = document.createElement('a');
+                        li.className = 'search-result-item';
+                        const textContent = (new DOMParser().parseFromString(item.text || item.content, "text/html")).body.textContent || "";
+                        li.innerHTML = `<h3>${item.title}</h3><p>${textContent.substring(0, 50)}...</p>`;
+                        li.onclick = () => {
+                            if (item.type === 'story') {
+                                document.querySelector(`.gallery-item[data-story='${item.id}']`).click();
+                            } else {
+                                openPage(item.id, item.type);
+                            }
+                            searchInput.value = '';
+                            mobileSearchInput.value = '';
+                            searchResultsContainer.classList.add('hidden');
+                            mobileSearchResultsContainer.classList.add('hidden');
+                        };
+                        resultsList.appendChild(li);
+                    });
+                } else {
+                    noResultsMsg.classList.remove('hidden');
+                }
+            };
+            
+            const setupSearch = (inputEl, resultsContainer, resultsList, noResultsMsg) => {
+                inputEl.addEventListener('focus', () => resultsContainer.classList.remove('hidden'));
+                inputEl.addEventListener('input', () => {
+                    resultsContainer.classList.remove('hidden');
+                    handleSearch(inputEl.value, resultsList, noResultsMsg);
+                });
+            };
+            
+            setupSearch(searchInput, searchResultsContainer, searchResultsList, noResultsMessage);
+            setupSearch(mobileSearchInput, mobileSearchResultsContainer, mobileSearchResultsList, mobileNoResultsMessage);
+
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.search-container')) {
+                    searchResultsContainer.classList.add('hidden');
+                    mobileSearchResultsContainer.classList.add('hidden');
+                }
+            });
+
+            // --- Day Viewer Logic ---
+            const openDayViewer = (date, events) => {
+                dayViewerTitle.textContent = date.toLocaleDateString('en-US', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+
+                dayViewerContentArea.innerHTML = ''; // Clear previous content
+
+                if (events.length === 0) {
+                    dayViewerContentArea.innerHTML = '<p class="text-center opacity-70">No events scheduled for this day.</p>';
+                } else {
+                    const eventListEl = document.createElement('ul');
+                    eventListEl.className = 'space-y-3 text-left';
+                    events.forEach(event => {
+                        const listItem = document.createElement('li');
+                        listItem.className = 'day-event-item flex items-center space-x-4 p-3 rounded-lg';
+                        
+                        const colorDot = document.createElement('div');
+                        colorDot.className = `w-3 h-3 rounded-full flex-shrink-0 event-item-${event.color || 'blue'}`;
+
+                        const eventDetails = document.createElement('div');
+                        eventDetails.className = 'flex-grow';
+                        const titleEl = document.createElement('p');
+                        titleEl.className = 'font-semibold';
+                        titleEl.textContent = event.title;
+                        eventDetails.appendChild(titleEl);
+
+                        if (event.time) {
+                            const timeEl = document.createElement('p');
+                            timeEl.className = 'text-sm opacity-80';
+                            timeEl.textContent = event.time;
+                            eventDetails.appendChild(timeEl);
+                        }
+                        
+                        listItem.appendChild(colorDot);
+                        listItem.appendChild(eventDetails);
+                        eventListEl.appendChild(listItem);
+                    });
+                    dayViewerContentArea.appendChild(eventListEl);
+                }
+
+                openModal(dayViewer);
+            };
+
+            closeDayButton.addEventListener('click', () => closeModal(dayViewer));
+            dayViewer.addEventListener('click', (e) => { if (e.target === dayViewer) closeModal(dayViewer); });
+
+
+            // --- Calendar Functionality ---
+            let currentDate = new Date(2025, 9, 1); // Set initial view to October 2025
+
+            const renderCalendar = () => {
+                const month = currentDate.getMonth();
+                const year = currentDate.getFullYear();
+                
+                const monthYearHeader = document.getElementById('month-year-header');
+                const calendarGrid = document.getElementById('calendar-grid');
+                const calendarDayNames = document.getElementById('calendar-day-names');
+
+                monthYearHeader.textContent = `${currentDate.toLocaleString('default', { month: 'long' })} ${year}`;
+                calendarGrid.innerHTML = '';
+                calendarDayNames.innerHTML = '';
+
+                // Add day names
+                const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                days.forEach(day => {
+                    const dayNameEl = document.createElement('div');
+                    dayNameEl.textContent = day;
+                    calendarDayNames.appendChild(dayNameEl);
+                });
+
+                const firstDayOfMonth = new Date(year, month, 1).getDay();
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+                const today = new Date();
+
+                for (let i = 0; i < firstDayOfMonth; i++) {
+                    const emptyCell = document.createElement('div');
+                    emptyCell.classList.add('calendar-day', 'other-month');
+                    calendarGrid.appendChild(emptyCell);
+                }
+
+                for (let i = 1; i <= daysInMonth; i++) {
+                    const dayCell = document.createElement('div');
+                    dayCell.classList.add('calendar-day');
+                    const dayContent = document.createElement('div');
+                    dayContent.classList.add('day-content');
+                    dayContent.innerHTML = `<span class="day-number">${i}</span>`;
+                    
+                    // Check for events
+                    const cellDate = new Date(year, month, i);
+                    const dayOfWeek = cellDate.getDay();
+                    const dateString = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+
+                    const recurringEventsForDay = calendarEvents.recurring[dayOfWeek] || [];
+                    const specificEventConfig = calendarEvents.specific[dateString];
+                    
+                    let allEventsForDay;
+
+                    if (specificEventConfig) {
+                        // Check for the new override format
+                        if (specificEventConfig.override) {
+                            allEventsForDay = specificEventConfig.events || [];
+                        } else {
+                            // Handle old format (array) or new format without override
+                            const specificEvents = Array.isArray(specificEventConfig) ? specificEventConfig : (specificEventConfig.events || []);
+                            allEventsForDay = [...recurringEventsForDay, ...specificEvents];
+                        }
+                    } else {
+                        // No specific events, just use recurring
+                        allEventsForDay = recurringEventsForDay;
+                    }
+
+                    if (allEventsForDay.length > 0) {
+                        const eventList = document.createElement('div');
+                        eventList.className = 'event-list';
+                        allEventsForDay.slice(0, 2).forEach(event => { // Show max 2 events
+                            const eventEl = document.createElement('div');
+                            eventEl.textContent = event.title;
+                            eventEl.className = `event-item event-item-${event.color || 'blue'}`;
+                            eventList.appendChild(eventEl);
+                        });
+                        if (allEventsForDay.length > 2) {
+                            const moreEl = document.createElement('div');
+                            moreEl.textContent = `+${allEventsForDay.length - 2} more`;
+                            moreEl.className = 'text-xs opacity-70 mt-1 pl-1';
+                            eventList.appendChild(moreEl);
+                        }
+                        dayContent.appendChild(eventList);
+                    }
+
+                    // Add click listener to the entire cell to open the day viewer
+                    dayCell.addEventListener('click', () => {
+                        openDayViewer(new Date(year, month, i), allEventsForDay);
+                    });
+
+
+                    dayCell.appendChild(dayContent);
+                    if (i === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
+                        dayCell.classList.add('today');
+                    }
+                    calendarGrid.appendChild(dayCell);
+                }
+            };
+            
+            document.getElementById('prev-month-btn').addEventListener('click', () => {
+                currentDate.setMonth(currentDate.getMonth() - 1);
+                renderCalendar();
+            });
+
+            document.getElementById('next-month-btn').addEventListener('click', () => {
+                currentDate.setMonth(currentDate.getMonth() + 1);
+                renderCalendar();
+            });
+
+            calendarLink.addEventListener('click', (e) => { e.preventDefault(); openModal(calendarViewer); });
+            mobileCalendarLink.addEventListener('click', (e) => { e.preventDefault(); openModal(calendarViewer); closeMobileMenu(); });
+            closeCalendarButton.addEventListener('click', () => closeModal(calendarViewer));
+            calendarViewer.addEventListener('click', (e) => { if(e.target === calendarViewer) closeModal(calendarViewer); });
+
+            // --- Initializations ---
+            renderCalendar(); // Initial render of the calendar
+
+        });
+    </script>
+</body>
+</html>
