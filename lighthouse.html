@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="light">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -21,20 +21,8 @@
         <link rel="icon" href="https://i0.wp.com/lighthousecfcwarwick.com/wp-content/uploads/2020/06/cropped-The-Lighthouse-Circle-Badge-Logo-Image-Only-1-1.png?fit=192%2C192&ssl=1" sizes="200x200">
 
     <style>
-        /* --- Base & Dark Mode Styles --- */
+        /* --- Base Styles --- */
         :root {
-            --bg-color: #1e293b; /* Neutral dark gray */
-            --text-color: #f9fafb;
-            --glass-bg: rgba(255, 255, 255, 0.15); /* Made brighter */
-            --glass-border: rgba(255, 255, 255, 0.15);
-            --glass-shadow-1: rgba(79, 70, 229, 0.1);
-            --glass-shadow-2: rgba(59, 130, 246, 0.1);
-            --glass-inset-shadow: rgba(255, 255, 255, 0.3);
-            --glass-hover-bg: rgba(255, 255, 255, 0.2); /* Made brighter */
-        }
-
-        /* --- Light Mode Styles --- */
-        html.light {
             --bg-color: #f8fafc; /* Neutral light gray */
             --text-color: #1f2937;
             --glass-bg: rgba(255, 255, 255, 0.8); /* Made brighter */
@@ -111,8 +99,7 @@
             transform: translateY(-2px);
         }
         
-        html.light .dropdown-content a:hover { background-color: rgba(0, 0, 0, 0.05); opacity: 1; }
-        html.dark .dropdown-content a:hover { background-color: rgba(255, 255, 255, 0.1); opacity: 1;}
+        .dropdown-content a:hover { background-color: rgba(0, 0, 0, 0.05); opacity: 1; }
 
         .dropdown-content {
             visibility: hidden;
@@ -143,12 +130,8 @@
         }
 
         /* --- Custom Dropdown Backgrounds --- */
-        html.light .dropdown-content.liquid-glass {
+        .dropdown-content.liquid-glass {
             --glass-bg: rgba(255, 255, 255, 0.95); /* More opaque white for light mode dropdown */
-        }
-        html.dark .dropdown-content.liquid-glass {
-            --glass-bg: rgba(17, 24, 39, 0.85); /* Darker, more opaque for dark mode dropdown */
-            --glass-border: rgba(62, 47, 47, 0.088);
         }
 
         /* Slider Customization */
@@ -158,14 +141,14 @@
             opacity: 0; /* Initially hidden */
         }
         .swiper-pagination-bullet {
-            background-color: rgba(255, 255, 255, 0.5) !important;
+            background-color: rgba(0, 0, 0, 0.4) !important;
             width: 12px !important;
             height: 12px !important;
             opacity: 0.7 !important;
             transition: all 200ms ease;
         }
         .swiper-pagination-bullet-active {
-            background-color: #ffffff !important;
+            background-color: #000 !important;
             width: 32px !important;
             border-radius: 6px !important;
             opacity: 1 !important;
@@ -178,8 +161,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: #374151; /* Dark mode bg */
-            color: #9ca3af; /* Dark mode icon color */
+            background-color: #e5e7eb; /* Light mode bg */
+            color: #6b7280; /* Light mode icon color */
             transition: background-color 200ms ease, transform 200ms ease, opacity 300ms ease-in-out;
             opacity: 0; /* Initially hidden */
         }
@@ -198,7 +181,7 @@
 
         .swiper-button-next:hover, .swiper-button-prev:hover { 
             transform: scale(1.05);
-            background-color: #4b5563; /* Dark mode bg hover */
+            background-color: #d1d5db; /* Light mode bg hover */
         }
         /* Remove default Swiper icons */
         .swiper-button-next::after, .swiper-button-prev::after { 
@@ -209,16 +192,6 @@
             height: 24px;
         }
         
-        html.light .swiper-pagination-bullet { background-color: rgba(0, 0, 0, 0.4) !important; }
-        html.light .swiper-pagination-bullet-active { background-color: #000 !important; }
-        html.light .swiper-button-next, html.light .swiper-button-prev { 
-            background-color: #e5e7eb; /* Light mode bg */
-            color: #6b7280; /* Light mode icon color */
-        }
-        html.light .swiper-button-next:hover, html.light .swiper-button-prev:hover { 
-            background-color: #d1d5db; /* Light mode bg hover */
-        }
-
         /* --- Scroll Animation Styles --- */
         .scroll-animate {
             opacity: 0;
@@ -246,25 +219,9 @@
             transition: filter 300ms ease-in-out;
         }
 
-        /* --- Theme Toggle Button --- */
-        #theme-toggle-button {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            box-shadow: 0 0 12px var(--glass-shadow-1);
-            transition: all 150ms cubic-bezier(0.4, 0.0, 0.2, 1);
-        }
-
-        #theme-toggle-button:hover {
-            transform: scale(1.05);
-            background: var(--glass-hover-bg);
-        }
-
         /* --- Modal (Story & Page Viewer) Styles --- */
-        html.light .viewer-content.liquid-glass {
+        .viewer-content.liquid-glass {
             --glass-bg: rgba(255, 255, 255, 0.95); /* Make light mode modal more opaque white */
-        }
-        html.dark .viewer-content.liquid-glass {
-            --glass-bg: rgba(17, 24, 39, 0.9); /* Make dark mode modal more opaque */
         }
         .viewer-modal {
             /* display is handled by .hidden class */
@@ -281,22 +238,24 @@
         }
 
         /* --- Event List in Day Viewer --- */
-        html.light .day-event-item { background-color: #f3f4f6; /* gray-100 */ }
-        html.dark .day-event-item { background-color: #1f2937; /* gray-800 */ }
+        .day-event-item { background-color: #f3f4f6; /* gray-100 */ }
+
+        /* NEW: Style for clickable events in the day viewer */
+        .clickable-event {
+            cursor: pointer;
+            transition: background-color 150ms ease;
+        }
+        .clickable-event:hover {
+            background-color: #e5e7eb; /* gray-200 */
+        }
 
 
         /* --- Table Card in Modal --- */
         .table-card {
             transition: background-color 300ms ease-in-out;
             border: 1px solid transparent;
-        }
-        html.light .table-card {
             background-color: #f9fafb; /* gray-50 */
             border-color: #e5e7eb; /* gray-200 */
-        }
-        html.dark .table-card {
-            background-color: #1f2937; /* gray-800 */
-            border-color: #374151; /* gray-700 */
         }
 
         /* --- Table Styles for Modal --- */
@@ -314,23 +273,11 @@
         }
 
         /* Light Mode Table */
-        html.light .viewer-content .data-table thead {
+        .viewer-content .data-table thead {
             background-color: #f3f4f6; /* gray-100 */
         }
-        html.light .viewer-content .data-table th {
+        .viewer-content .data-table th {
             color: #4b5563; /* gray-600 */
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.75rem;
-            letter-spacing: 0.05em;
-        }
-
-        /* Dark Mode Table */
-        html.dark .viewer-content .data-table thead {
-            background-color: rgba(55, 65, 81, 0.5); /* gray-700 with transparency */
-        }
-        html.dark .viewer-content .data-table th {
-            color: #d1d5db; /* gray-300 */
             font-weight: 600;
             text-transform: uppercase;
             font-size: 0.75rem;
@@ -366,33 +313,19 @@
             font-weight: 500;
             border-radius: 9999px;
         }
-        html.light .info-pill {
+        .info-pill {
             background-color: #e5e7eb; /* gray-200 */
             color: #4b5563; /* gray-600 */
-        }
-        html.dark .info-pill {
-            background-color: #374151; /* gray-700 */
-            color: #d1d5db; /* gray-300 */
         }
 
         /* --- Modal Close Button --- */
         .theme-aware-close-button {
             transition: background-color 200ms ease, transform 150ms ease;
-        }
-        html.light .theme-aware-close-button {
             background-color: #e5e7eb; /* gray-200 */
             color: #4b5563; /* gray-600 */
         }
-        html.light .theme-aware-close-button:hover {
+        .theme-aware-close-button:hover {
             background-color: #d1d5db; /* gray-300 */
-            transform: scale(1.05);
-        }
-        html.dark .theme-aware-close-button {
-            background-color: #374151; /* gray-700 */
-            color: #d1d5db; /* gray-300 */
-        }
-        html.dark .theme-aware-close-button:hover {
-            background-color: #4b5563; /* gray-600 */
             transform: scale(1.05);
         }
 
@@ -441,11 +374,8 @@
             transition: all 150ms ease-in-out;
             color: var(--text-color);
         }
-        html.light .form-input {
+        .form-input {
             border-color: rgba(0,0,0,0.2);
-        }
-        html.dark .form-input {
-            border-color: rgba(255,255,255,0.2);
         }
         .form-input:focus {
             outline: none;
@@ -466,11 +396,8 @@
             transition: background-color 150ms ease;
             cursor: pointer;
         }
-        html.light .search-result-item:hover {
+        .search-result-item:hover {
             background-color: rgba(0, 0, 0, 0.05);
-        }
-        html.dark .search-result-item:hover {
-            background-color: rgba(255, 255, 255, 0.1);
         }
         .search-result-item h3 {
             font-weight: 600;
@@ -486,8 +413,7 @@
         }
         .search-results-list::-webkit-scrollbar { width: 5px; }
         .search-results-list::-webkit-scrollbar-track { background: transparent; }
-        html.light .search-results-list::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
-        html.dark .search-results-list::-webkit-scrollbar-thumb { background: #555; border-radius: 10px; }
+        .search-results-list::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
 
         /* --- Calendar Styles --- */
         #calendar-day-names {
@@ -526,11 +452,8 @@
             flex-direction: column;
             align-items: flex-start;
         }
-        html.light .calendar-day {
+        .calendar-day {
             border-color: #d1d5db; /* gray-300 - brighter */
-        }
-        html.dark .calendar-day {
-            border-color: #4b5563; /* gray-600 - brighter */
         }
         .calendar-day.other-month .day-content {
             opacity: 0.3;
@@ -538,12 +461,7 @@
         }
         .calendar-day.today {
             border-width: 2px;
-        }
-        html.light .calendar-day.today {
             border-color: #4f46e5 !important; /* Brighter blue/indigo for light mode */
-        }
-        html.dark .calendar-day.today {
-            border-color: #a5b4fc !important; /* Brighter indigo for dark mode */
         }
         .calendar-day .day-number {
             font-weight: 500;
@@ -565,19 +483,88 @@
             margin-bottom: 2px;
             font-weight: 500;
         }
-        /* --- Brighter Event Colors --- */
-        html.light .event-item-blue { background-color: #3b82f6; color: #ffffff; }
-        html.dark .event-item-blue { background-color: #60a5fa; color: #1e3a8a; }
-        html.light .event-item-green { background-color: #22c55e; color: #ffffff; }
-        html.dark .event-item-green { background-color: #4ade80; color: #064e3b; }
-        html.light .event-item-purple { background-color: #8b5cf6; color: #ffffff; }
-        html.dark .event-item-purple { background-color: #a78bfa; color: #4c1d95; }
-        html.light .event-item-orange { background-color: #f97316; color: #ffffff; }
-        html.dark .event-item-orange { background-color: #fb923c; color: #7c2d12; }
-        html.light .event-item-gray { background-color: #6b7280; color: #ffffff; }
-        html.dark .event-item-gray { background-color: #9ca3af; color: #1f2937; }
-
-
+        /* --- Event Colors --- */
+        .event-item-blue { background-color: #3b82f6; color: #ffffff; }
+        .event-item-green { background-color: #22c55e; color: #ffffff; }
+        .event-item-purple { background-color: #8b5cf6; color: #ffffff; }
+        .event-item-orange { background-color: #f97316; color: #ffffff; }
+        .event-item-gray { background-color: #6b7280; color: #ffffff; }
+        .event-item-red { background-color: #dc2626; color: #ffffff; }
+        .event-item-pink { background-color: #ec4899; color: #ffffff; }
+        .event-item-yellow { background-color: #eab308; color: #ffffff; }
+        .event-item-teal { background-color: #14b8a6; color: #ffffff; }
+        .event-item-cyan { background-color: #06b6d4; color: #ffffff; }
+        .event-item-lime { background-color: #84cc16; color: #ffffff; }
+        .event-item-amber { background-color: #f59e0b; color: #ffffff; }
+        .event-item-indigo { background-color: #6366f1; color: #ffffff; }
+        .event-item-emerald { background-color: #10b981; color: #ffffff; }
+        .event-item-violet { background-color: #8b5cf6; color: #ffffff; }
+        .event-item-rose { background-color: #f43f5e; color: #ffffff; }
+        .event-item-fuchsia { background-color: #d946ef; color: #ffffff; }
+        .event-item-sky { background-color: #0ea5e9; color: #ffffff; }
+        .event-item-warmgray { background-color: #78716c; color: #ffffff; }
+        .event-item-coolgray { background-color: #9ca3af; color: #ffffff; }
+        .event-item-steelgray { background-color: #64748b; color: #ffffff; }
+        .event-item-charcoal { background-color: #374151; color: #ffffff; }
+        .event-item-olive { background-color: #84cc16; color: #ffffff; }
+        .event-item-teak { background-color: #b45309; color: #ffffff; }
+        .event-item-cerulean { background-color: #2563eb; color: #ffffff; }
+        .event-item-burgundy { background-color: #7c2d12; color: #ffffff; }
+        .event-item-navy { background-color: #1e3a8a; color: #ffffff; }
+        .event-item-mauve { background-color: #9333ea; color: #ffffff; }
+        .event-item-saffron { background-color: #d97706; color: #ffffff; }
+        .event-item-copper { background-color: #b45309; color: #ffffff; }
+        .event-item-amber { background-color: #d97706; color: #ffffff; }
+        .event-item-ivory { background-color: #f3f4f6; color: #1f2937; }
+        .event-item-teal { background-color: #0d9488; color: #ffffff; }
+        .event-item-deeppink { background-color: #db2777; color: #ffffff; }
+        .event-item-lightblue { background-color: #60a5fa; color: #ffffff; }
+        .event-item-iron { background-color: #4b5563; color: #ffffff; }
+        .event-item-chocolate { background-color: #7c2d12; color: #ffffff; }
+        .event-item-forestgreen { background-color: #15803d; color: #ffffff; }
+        .event-item-sapphire { background-color: #2563eb; color: #ffffff; }
+        .event-item-citrine { background-color: #eab308; color: #ffffff; }
+        .event-item-ruby { background-color: #dc2626; color: #ffffff; }
+        .event-item-amber { background-color: #f59e0b; color: #ffffff; }
+        .event-item-cerulean { background-color: #2563eb; color: #ffffff; }
+        .event-item-mint { background-color: #10b981; color: #ffffff; }
+        .event-item-lightgreen { background-color: #22c55e; color: #ffffff; }
+        .event-item-lighthemon { background-color: #fbbf24; color: #ffffff; }
+        .event-item-cosmicblue { background-color: #3b82f6; color: #ffffff; }
+        .event-item-cosmicorange { background-color: #f97316; color: #ffffff; }
+        .event-item-cosmicpurple { background-color: #8b5cf6; color: #ffffff; }
+        .event-item-titanium { background-color: #374151; color: #ffffff; }
+        .event-item-graphite { background-color: #4b5563; color: #ffffff; }
+        .event-item-silver { background-color: #9ca3af; color: #ffffff; }
+        .event-item-gold { background-color: #d97706; color: #ffffff; }
+        .event-item-platinum { background-color: #6b7280; color: #ffffff; }
+        .event-item-diamond { background-color: #0ea5e9; color: #ffffff; }
+        .event-item-unltramarine { background-color: #4f46e5; color: #ffffff; }
+        .event-item-pearl { background-color: #f3f4f6; color: #1f2937; }
+        .event-item-natualtitanium { background-color: #78716c; color: #ffffff; }
+        .event-item-carbon { background-color: #374151; color: #ffffff; }
+        .event-item-zirconium { background-color: #6b7280; color: #ffffff; }
+        .event-item-beryl { background-color: #22c55e; color: #ffffff; }
+        .event-item-aquamarine { background-color: #06b6d4; color: #ffffff; }
+        .event-item-topaz { background-color: #f59e0b; color: #ffffff; }
+        .event-item-amethyst { background-color: #8b5cf6; color: #ffffff; }
+        .event-item-garnet { background-color: #b91c1c; color: #ffffff; }
+        .event-item-tourmaline { background-color: #db2777; color: #ffffff; }
+        .event-item-zircon { background-color: #9ca3af; color: #ffffff; }
+        .event-item-sapphire { background-color: #2563eb; color: #ffffff; }
+        .event-item-silverblue { background-color: #3b82f6; color: #ffffff; }
+        .event-item-goldenyellow { background-color: #f59e0b; color: #ffffff; }
+        .event-item-rosepink { background-color: #f43f5e; color: #ffffff; }
+        .event-item-lavender { background-color: #c084fc; color: #ffffff; }
+        .event-item-peach { background-color: #fb923c; color: #ffffff; }
+        .event-item-sage { background-color: #22c55e; color: #ffffff; }
+        .event-item-moss { background-color: #4ade80; color: #ffffff; }
+        .event-item-desserttitan { background-color: #edc9af; color: #ffffff; }
+        .event-item-oceanblue { background-color: #0ea5e9; color: #ffffff; }
+        .event-item-sunsetorange { background-color: #f97316; color: #ffffff; }
+        .event-item-twilightpurple { background-color: #8b5cf6; color: #ffffff; }
+        .event-item-midnightblack { background-color: #1f2937; color: #ffffff; }
+        .event-item-starlightsilver { background-color: #9ca3af; color: #ffffff; }
     </style>
 </head>
 <body class="antialiased">
@@ -614,7 +601,7 @@
                         
                         <a href="#" id="calendar-link" class="nav-link px-4 py-2 text-sm font-medium">Calendar</a>
                         <a href="#" class="page-link nav-link px-4 py-2 text-sm font-medium" data-page="contact" data-type="about">Contact Us</a>
-                        <a href="#" class="page-link nav-link px-4 py-2 text-sm font-medium" data-page="giving" data-type="about">Giving</a>
+                        <a href="https://give.tithe.ly/my-church" target="_blank" rel="noopener noreferrer" class="nav-link px-4 py-2 text-sm font-medium">Giving</a>
                         <a href="https://www.youtube.com/@lighthousecfcwarwick" target="_blank" class="nav-link px-4 py-2 text-sm font-medium flex items-center">
                             <svg class="w-5 h-5 mr-2" fill="#EF4444" viewBox="0 0 24 24"><title>YouTube Icon</title><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
                             Live
@@ -681,7 +668,7 @@
 
                     <a href="#" id="mobile-calendar-link" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-white/20">Calendar</a>
                     <a href="#" class="mobile-page-link block px-3 py-2 rounded-md text-base font-medium hover:bg-white/20" data-page="contact" data-type="about">Contact Us</a>
-                    <a href="#" class="mobile-page-link block px-3 py-2 rounded-md text-base font-medium hover:bg-white/20" data-page="giving" data-type="about">Giving</a>
+                    <a href="https://give.tithe.ly/my-church" target="_blank" rel="noopener noreferrer" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-white/20">Giving</a>
                     <a href="https://www.youtube.com/@lighthousecfcwarwick" target="_blank" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-white/20">Live</a>
                 </nav>
             </div>
@@ -792,9 +779,6 @@
         <!-- Footer -->
         <footer class="text-center py-8 mt-8 scroll-animate">
             <p class="text-sm opacity-70">&copy; Lighthouse CFC Warwick, 2025</p>
-               <button id="theme-toggle-button" aria-label="Toggle light and dark mode" class="mx-auto mt-6 px-5 py-2 rounded-full text-sm font-semibold">
-                Change Theme
-            </button>
         </footer>
 
     </div>
@@ -873,6 +857,23 @@
              </div>
         </div>
     </div>
+
+    <!-- NEW Custom Event Viewer Modal -->
+    <div id="custom-event-viewer" class="viewer-modal fixed inset-0 z-[70] flex items-center justify-center p-4 bg-gray-900/50 backdrop-blur-sm hidden" role="dialog" aria-modal="true">
+        <div class="viewer-content liquid-glass relative p-6 sm:p-8 pt-12 w-full max-w-2xl max-h-[90vh] overflow-y-auto text-center">
+             <button id="close-custom-event-button" class="theme-aware-close-button absolute top-3 left-3 p-2 rounded-full" aria-label="Close Event View">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <title>Close</title>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+             </button>
+             <h1 id="custom-event-title" class="text-3xl sm:text-4xl font-bold mb-6 text-center"></h1>
+             <div id="custom-event-content-area" class="space-y-6 text-xl">
+                <!-- Content will be injected by JS -->
+             </div>
+        </div>
+    </div>
+    <!-- END NEW MODAL -->
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -1009,7 +1010,7 @@
                                         <tr><td>United States Virgin Islands</td><td>VI</td><td class="text-right">103.671</td></tr>
                                         <tr><td>Wallis and Futuna Islands</td><td>WF</td><td class="text-right">10.896</td></tr>
                                         <tr><td>Western Sahara</td><td>EH</td><td class="text-right">640.261</td></tr>
-                                        <tr><td>Yemen</td><td>YE</td><td class="text-right">31,818.24</td></tr>
+                                        <tr><td>Yemen</td><td>YE</td><td class"text-right">31,818.24</td></tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -1120,6 +1121,42 @@
             };
             const eventPages = {
             };
+            // NEW: Custom Modal Content
+            const customModalData = {
+                'bibleConfModal': {
+                    title: 'Bible Conference',
+                    content: `
+                        <p class="text-center font-semibold mb-4">The Potter’s House Christian Fellowship Church, Prescott, AZ</p>
+                        <ul class="space-y-5">
+                            <li><strong>Main Website:</strong><br><a href="https://www.prescottpottershouse.com" target="_blank" rel="noopener noreferrer" class="opacity-80 hover:opacity-100 hover:underline break-words">https://www.prescottpottershouse.com</a></li>
+                            <li><strong>Livestream:</strong><br><a href="httpsVimeo" target="_blank" rel="noopener noreferrer" class="opacity-80 hover:opacity-100 hover:underline break-words">https://vimeo.com/showcase/prescottpottershouseservices</a></li>
+                            <li><strong>Giving:</strong><br><a href="https://www.prescottpottershouse.com/giving" target="_blank" rel="noopener noreferrer" class="opacity-80 hover:opacity-100 hover:underline break-words">https://www.prescottpottershouse.com/giving</a></li>
+                        </ul>
+                        <div class="border-t pt-6 mt-6" style="border-color: var(--glass-border);">
+                            <p class="font-semibold text-center mb-4">PH Prescott App</p>
+                            <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
+                                <a href="https://apps.apple.com/us/app/prescott-potters-house/id1567312488" target="_blank" rel="noopener noreferrer" class="block hover:scale-105 transition-transform w-48">
+                                    <img src="https://static.vecteezy.com/system/resources/previews/012/871/374/non_2x/app-store-download-button-in-white-colors-download-on-the-apple-app-store-free-png.png" alt="Download on the App Store" class="w-full h-auto" onerror="this.outerHTML='<span class=info-pill>App Store</span>'">
+                                </a>
+                                <a href="https://play.google.com/store/apps/details?id=com.subsplashconsulting.s_4KCZWX" target="_blank" rel="noopener noreferrer" class="block hover:scale-105 transition-transform w-48">
+                                    <img src="https://www.sephora.co.uk/assets/img/download_app_badge/GetItOnGooglePlay_Badge.png" alt="Get it on Google Play" class="w-full h-auto" onerror="this.outerHTML='<span class=info-pill>Google Play</span>'">
+                                </a>
+                            </div>
+                        </div>
+                        <!-- Added Map Section -->
+                        <div class="border-t pt-6 mt-6" style="border-color: var(--glass-border);">
+                            <p class="font-semibold text-center mb-4">Location</p>
+                            <div class="liquid-glass p-2 sm:p-4" style="--glass-bg: rgba(0,0,0,0.05);">
+                                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3282.928613467392!2d-112.43007953701937!3d34.63124423682086!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x872d2564c93d37ff%3A0x6bf08c1138ecd371!2sThe%20Potter&#39;s%20House%20Christian%20Fellowship%20Church!5e0!3m2!1sen!2sus!4v1761153705767!5m2!1sen!2sus" width="100%" height="300" style="border:0; border-radius: 10px;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                            </div>
+                        </div>
+                    `
+                },
+                /* NEW: Added modal content for the Revival event */
+                'revivalModal': {
+                    title: 'Revival with Pastor Andy Anderson'
+                }
+            };
             const aboutPages = {
                 'mission': { 
                     title: 'Our Vision', 
@@ -1197,7 +1234,6 @@
 
             // --- DOM Elements ---
             const pageContentEl = document.getElementById('page-content');
-            const themeToggleButton = document.getElementById('theme-toggle-button');
             const desktopNav = document.getElementById('desktop-nav');
             const navLinks = desktopNav.querySelectorAll('.nav-link, .dropdown-toggle');
             const navHoverPill = document.getElementById('nav-hover-pill');
@@ -1241,61 +1277,229 @@
             const dayViewerTitle = document.getElementById('day-viewer-title');
             const dayViewerContentArea = document.getElementById('day-viewer-content-area');
 
+            // NEW: Custom Event Modal DOM Elements
+            const customEventViewer = document.getElementById('custom-event-viewer');
+            const closeCustomEventButton = document.getElementById('close-custom-event-button');
+            const customEventTitle = document.getElementById('custom-event-title');
+            const customEventContentArea = document.getElementById('custom-event-content-area');
+
             // --- Calendar Event Data ---
             const calendarEvents = {
                 recurring: {
                     0: [ // Sunday
-                        { title: 'Prayer/Sunday School', time: '10:00 a.m.', color: 'blue' },
-                        { title: 'Morning Worship', time: '11:00 a.m.', color: 'blue' },
-                        { title: 'Evening Prayer', time: '5:30 p.m.', color: 'blue' },
-                        { title: 'Evening Worship', time: '6:30 p.m.', color: 'blue' },
+                        { title: 'Prayer/Sunday School', time: '10:00 a.m.', color: 'cosmicorange' },
+                        { title: 'Morning Service', time: '11:00 a.m.', color: 'mint' },
+                        { title: 'Evening Prayer', time: '5:30 p.m.', color: 'green' },
+                        { title: 'Evening Service', time: '6:30 p.m.', color: 'teal' },
                     ],
                     1: [ // Monday
-                        { title: 'Morning Prayer', time: '7:00 a.m.', color: 'gray' },
+                        { title: 'Morning Prayer', time: '7:00 a.m.', color: 'cerulean' },
                     ],
                     2: [ // Tuesday
-                        { title: 'Morning Prayer', time: '7:00 a.m.', color: 'gray' },
+                        { title: 'Morning Prayer', time: '7:00 a.m.', color: 'cerulean' },
                     ],
                     3: [ // Wednesday
-                        { title: 'Morning Prayer', time: '7:00 a.m.', color: 'gray' },
+                        { title: 'Morning Prayer', time: '7:00 a.m.', color: 'cerulean' },
                     ],
                     4: [ // Thursday
-                        { title: 'Morning Prayer', time: '7:00 a.m.', color: 'gray' },
-                        { title: 'Prayer', time: '6:00 p.m.', color: 'green' },
-                        { title: 'Midweek Service', time: '7:00 p.m.', color: 'green' }
+                        { title: 'Morning Prayer', time: '7:00 a.m.', color: 'cerulean' },
+                        { title: 'Evening Prayer', time: '6:00 p.m.', color: 'green' },
+                        { title: 'Midweek Service', time: '7:00 p.m.', color: 'desserttitan' }
                     ],
                     5: [ // Friday
-                        { title: 'Morning Prayer', time: '7:00 a.m.', color: 'gray' },
+                        { title: 'Morning Prayer', time: '7:00 a.m.', color: 'cerulean' },
                     ],
                     6: [ // Saturday
-                        { title: 'Prayer', time: '10:30 a.m.', color: 'purple' },
+                        { title: 'Prayer', time: '10:30 a.m.', color: 'green' },
                         { title: 'Outreach', time: '11:30 a.m.', color: 'purple' }
                     ]
                 },
                 specific: {
-                    '2025-10-16': [{ title: 'Harvester Rally', color: 'orange' }],
-                    '2025-10-17': [{ title: 'Harvester Rally', color: 'orange' }],
-                    '2025-10-18': [{ title: 'Harvester Rally', color: 'orange' }],
-                    '2025-10-25': { events: [{ title: 'Fall Festival', time: '12 PM - 5 PM', color: 'orange' }], override: true },
+                    '2025-10-25': {
+                        events: [{
+                            title: 'Fall Festival',
+                            time: '10 PM - 4 PM',
+                            color: 'orange' }],
+                        override: true },
+
+                    '2025-10-31': {
+                        events: [{
+                            title: 'Trunk O Treat',
+                            time: 'TBA',
+                            color: 'red' }],
+                        override: true },
+                    
+                    '2025-11-13': {
+                        events: [{ title: 'Revival',
+                        time: '7 p.m',
+                        color: 'pink',
+                        customModal: 'revivalModal' }],
+                    },
+                    '2025-11-14': {
+                        events: [{ title: 'Revival',
+                        time: '7 p.m',
+                        color: 'pink',
+                        customModal: 'revivalModal' }],
+                    },
+                    '2025-11-15': {
+                        events: [{
+                        title: 'Revival',
+                        time: '7 p.m',
+                        color: 'pink',
+                        customModal: 'revivalModal' }],
+                    },
+                    '2025-11-16': {
+                        events: [{
+                        title: 'Revival',
+                        time: '7 p.m',
+                        color: 'pink',
+                        customModal: 'revivalModal' }],
+                    },
+
+                    /* El Paso Conf */
+
+                    '2026-03-30': { 
+                        events: [
+                            { title: 'Morning Prayer', time: '7:00-8:00 AM (MST)', color: 'olive' },
+                            { title: 'Seminar 1', time: '9:00-9:45 AM (MST)', color: 'pink' },
+                            { title: 'Seminar 2', time: '9:45-10:30 AM (MST)', color: 'pink' },
+                            { title: 'Break', time: '10:30-11:00 AM (MST)', color: 'pink' },
+                            { title: 'Seminar 3', time: '11:00 AM (MST)', color: 'pink' },
+                            { title: 'Evening Prayer', time: '5:30-6:30 PM (MST)', color: 'pink' },
+                            { title: 'PM Service 1', 
+                              time: '6:30 PM (MST)', 
+                              color: 'red',
+                              customModal: 'bibleConfModal'}],},
+                    
+
+                    /* Jan Bible Conf EVENTS */
+                    
+                    '2026-01-12': { 
+                        events: [
+                            { title: 'Morning Prayer', time: '7:00-8:00 AM (MST)', color: 'olive' },
+                            { title: 'Seminar 1', time: '9:00-9:45 AM (MST)', color: 'pink' },
+                            { title: 'Seminar 2', time: '9:45-10:30 AM (MST)', color: 'pink' },
+                            { title: 'Break', time: '10:30-11:00 AM (MST)', color: 'pink' },
+                            { title: 'Seminar 3', time: '11:00 AM (MST)', color: 'pink' },
+                            { title: 'Evening Prayer', time: '5:30-6:30 PM (MST)', color: 'pink' },
+                            { title: 'PM Service 1', 
+                              time: '6:30 PM (MST)', 
+                              color: 'red',
+                              customModal: 'bibleConfModal'}],},
+                    '2026-01-13': { 
+                        events: [
+                            { title: 'Morning Prayer', time: '7:00-8:00 AM (MST)', color: 'olive' },
+                            { title: 'Seminar 1', time: '9:00-9:45 AM (MST)', color: 'pink' },
+                            { title: 'Seminar 2', time: '9:45-10:30 AM (MST)', color: 'pink' },
+                            { title: 'Break', time: '10:30-11:00 AM (MST)', color: 'pink' },
+                            { title: 'Seminar 3', time: '11:00 AM (MST)', color: 'pink' },
+                            { title: 'Evening Prayer', time: '5:30-6:30 PM (MST)', color: 'pink' },
+                            { title: 'PM Service 2', 
+                              time: '6:30 PM (MST)', 
+                              color: 'red',
+                              customModal: 'bibleConfModal'}],},
+                    '2026-01-14': { 
+                        events: [
+                            { title: 'Morning Prayer', time: '7:00-8:00 AM (MST)', color: 'olive' },
+                            { title: 'Seminar 1', time: '9:00-9:45 AM (MST)', color: 'pink' },
+                            { title: 'Seminar 2', time: '9:45-10:30 AM (MST)', color: 'pink' },
+                            { title: 'Break', time: '10:30-11:00 AM (MST)', color: 'pink' },
+                            { title: 'Seminar 3', time: '11:00 AM (MST)', color: 'pink' },
+                            { title: 'Evening Prayer', time: '5:30-6:30 PM (MST)', color: 'pink' },
+                            { title: 'PM Service 3', 
+                              time: '6:30 PM (MST)', 
+                              color: 'red',
+                              customModal: 'bibleConfModal'}],},
+                    '2026-01-15': { 
+                        events: [
+                            { title: 'Morning Prayer', time: '7:00-8:00 AM (MST)', color: 'olive' },
+                            { title: 'Seminar 1', time: '9:00-9:45 AM (MST)', color: 'pink' },
+                            { title: 'Seminar 2', time: '9:45-10:30 AM (MST)', color: 'pink' },
+                            { title: 'Break', time: '10:30-11:00 AM (MST)', color: 'pink' },
+                            { title: 'Seminar 3', time: '11:00 AM (MST)', color: 'pink' },
+                            { title: 'Evening Prayer', time: '5:30-6:30 PM (MST)', color: 'pink' },
+                            { title: 'PM Service 4', 
+                              time: '6:30 PM (MST)', 
+                              color: 'red',
+                              customModal: 'bibleConfModal'}],},
+                    '2026-01-16': { 
+                        events: [
+                            { title: 'Morning Prayer', time: '7:00-8:00 AM (MST)', color: 'olive' },
+                            { title: 'Seminar 1', time: '9:00-9:45 AM (MST)', color: 'pink' },
+                            { title: 'Seminar 2', time: '9:45-10:30 AM (MST)', color: 'pink' },
+                            { title: 'Break', time: '10:30-11:00 AM (MST)', color: 'pink' },
+                            { title: 'Seminar 3', time: '11:00 AM (MST)', color: 'pink' },
+                            { title: 'Evening Prayer', time: '5:30-6:30 PM (MST)', color: 'pink' },
+                            { title: 'PM Service 5', 
+                              time: '6:30 PM (MST)', 
+                              color: 'red',
+                              customModal: 'bibleConfModal'}],},
+
+                    // ---July Conference Events---
+                    '2026-07-13': {
+                        events: [
+                            { title: 'Morning Prayer', time: '7:00-8:00 AM (MST)', color: 'olive' },
+                            { title: 'Seminar 1', time: '9:00-9:45 AM (MST)', color: 'pink' },
+                            { title: 'Seminar 2', time: '9:45-10:30 AM (MST)', color: 'pink' },
+                            { title: 'Break', time: '10:30-11:00 AM (MST)', color: 'pink' },
+                            { title: 'Seminar 3', time: '11:00 AM (MST)', color: 'pink' },
+                            { title: 'Evening Prayer', time: '5:30-6:30 PM (MST)', color: 'pink' },
+                            { title: 'PM Service 1', 
+                              time: '6:30 PM (MST)', 
+                              color: 'red',
+                              customModal: 'bibleConfModal'}],},
+                    '2026-07-14': { 
+                        events: [
+                            { title: 'Morning Prayer', time: '7:00-8:00 AM (MST)', color: 'olive' },
+                            { title: 'Seminar 1', time: '9:00-9:45 AM (MST)', color: 'pink' },
+                            { title: 'Seminar 2', time: '9:45-10:30 AM (MST)', color: 'pink' },
+                            { title: 'Break', time: '10:30-11:00 AM (MST)', color: 'pink' },
+                            { title: 'Seminar 3', time: '11:00 AM (MST)', color: 'pink' },
+                            { title: 'Evening Prayer', time: '5:30-6:30 PM (MST)', color: 'pink' },
+                            { title: 'PM Service 2', 
+                              time: '6:30 PM (MST)', 
+                              color: 'red',
+                              customModal: 'bibleConfModal'}],},
+                    '2026-07-15': { 
+                        events: [
+                            { title: 'Morning Prayer', time: '7:00-8:00 AM (MST)', color: 'olive' },
+                            { title: 'Seminar 1', time: '9:00-9:45 AM (MST)', color: 'pink' },
+                            { title: 'Seminar 2', time: '9:45-10:30 AM (MST)', color: 'pink' },
+                            { title: 'Break', time: '10:30-11:00 AM (MST)', color: 'pink' },
+                            { title: 'Seminar 3', time: '11:00 AM (MST)', color: 'pink' },
+                            { title: 'Evening Prayer', time: '5:30-6:30 PM (MST)', color: 'pink' },
+                            { title: 'PM Service 3', 
+                              time: '6:30 PM (MST)', 
+                              color: 'red',
+                              customModal: 'bibleConfModal'}],},
+                    '2026-07-16': { 
+                        events: [
+                            { title: 'Morning Prayer', time: '7:00-8:00 AM (MST)', color: 'olive' },
+                            { title: 'Seminar 1', time: '9:00-9:45 AM (MST)', color: 'pink' },
+                            { title: 'Seminar 2', time: '9:45-10:30 AM (MST)', color: 'pink' },
+                            { title: 'Break', time: '10:30-11:00 AM (MST)', color: 'pink' },
+                            { title: 'Seminar 3', time: '11:00 AM (MST)', color: 'pink' },
+                            { title: 'Evening Prayer', time: '5:30-6:30 PM (MST)', color: 'pink' },
+                            { title: 'PM Service 4', 
+                              time: '6:30 PM (MST)', 
+                              color: 'red',
+                              customModal: 'bibleConfModal'}],},
+                    '2026-07-17': { 
+                        events: [
+                            { title: 'Morning Prayer', time: '7:00-8:00 AM (MST)', color: 'olive' },
+                            { title: 'Seminar 1', time: '9:00-9:45 AM (MST)', color: 'pink' },
+                            { title: 'Seminar 2', time: '9:45-10:30 AM (MST)', color: 'pink' },
+                            { title: 'Break', time: '10:30-11:00 AM (MST)', color: 'pink' },
+                            { title: 'Seminar 3', time: '11:00 AM (MST)', color: 'pink' },
+                            { title: 'Evening Prayer', time: '5:30-6:30 PM (MST)', color: 'pink' },
+                            { title: 'PM Service 5', 
+                              time: '6:30 PM (MST)', 
+                              color: 'red',
+                              customModal: 'bibleConfModal'}],}
                 }
             };
 
             // --- Theme Manager ---
-            const applyTheme = (theme) => {
-                if (theme === 'dark') {
-                    document.documentElement.classList.remove('light');
-                } else {
-                    document.documentElement.classList.add('light');
-                }
-            };
-            const currentTheme = localStorage.getItem('theme') || 'light';
-            applyTheme(currentTheme);
-
-            themeToggleButton.addEventListener('click', () => {
-                const newTheme = document.documentElement.classList.contains('light') ? 'dark' : 'light';
-                localStorage.setItem('theme', newTheme);
-                applyTheme(newTheme);
-            });
             
             // --- Modal Manager ---
             let modalSwiper = null; // To hold the swiper instance for the modal
@@ -1318,6 +1522,22 @@
                         modalSwiper = null;
                     }
                 }, 300);
+            };
+
+            // NEW: Custom Event Modal Opener
+            const openCustomEventModal = (modalId) => {
+                const data = customModalData[modalId];
+                if (!data) return;
+
+                customEventTitle.textContent = data.title;
+                customEventContentArea.innerHTML = data.content;
+                
+                // Close the day viewer if it's open (shouldn't be, but good practice)
+                if (dayViewer.classList.contains('is-visible')) {
+                    closeModal(dayViewer);
+                }
+                
+                openModal(customEventViewer);
             };
 
             // --- Navigation Pill ---
@@ -1592,6 +1812,17 @@
                             eventDetails.appendChild(timeEl);
                         }
                         
+                        // NEW: Check if this event should open a custom modal
+                        if (event.customModal) {
+                            listItem.classList.add('clickable-event'); // Add class for styling
+                            listItem.addEventListener('click', () => {
+                                // Close the current day-viewer modal
+                                closeModal(dayViewer);
+                                // Open the specific custom event modal
+                                openCustomEventModal(event.customModal);
+                            });
+                        }
+                        
                         listItem.appendChild(colorDot);
                         listItem.appendChild(eventDetails);
                         eventListEl.appendChild(listItem);
@@ -1604,6 +1835,10 @@
 
             closeDayButton.addEventListener('click', () => closeModal(dayViewer));
             dayViewer.addEventListener('click', (e) => { if (e.target === dayViewer) closeModal(dayViewer); });
+
+            // NEW: Add close logic for custom event modal
+            closeCustomEventButton.addEventListener('click', () => closeModal(customEventViewer));
+            customEventViewer.addEventListener('click', (e) => { if (e.target === customEventViewer) closeModal(customEventViewer); });
 
 
             // --- Calendar Functionality ---
@@ -1655,11 +1890,13 @@
                     const specificEventConfig = calendarEvents.specific[dateString];
                     
                     let allEventsForDay;
+                    // let customModalId = null; // <-- REMOVED this line
 
                     if (specificEventConfig) {
                         // Check for the new override format
                         if (specificEventConfig.override) {
                             allEventsForDay = specificEventConfig.events || [];
+                            // REMOVED: Check for customModal here
                         } else {
                             // Handle old format (array) or new format without override
                             const specificEvents = Array.isArray(specificEventConfig) ? specificEventConfig : (specificEventConfig.events || []);
@@ -1678,7 +1915,7 @@
                             eventEl.textContent = event.title;
                             eventEl.className = `event-item event-item-${event.color || 'blue'}`;
                             eventList.appendChild(eventEl);
-                        });
+});
                         if (allEventsForDay.length > 2) {
                             const moreEl = document.createElement('div');
                             moreEl.textContent = `+${allEventsForDay.length - 2} more`;
@@ -1688,7 +1925,10 @@
                         dayContent.appendChild(eventList);
                     }
 
-                    // Add click listener to the entire cell to open the day viewer
+                    // Add click listener to the entire cell
+                    // REMOVED: The `if (customModalId)` check
+                    
+                    // This day cell ALWAY opens the standard day viewer
                     dayCell.addEventListener('click', () => {
                         openDayViewer(new Date(year, month, i), allEventsForDay);
                     });
